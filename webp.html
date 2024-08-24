@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            transition: color 0.3s ease;
+            font-size: 24px;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+        input[type="file"], input[type="text"], select {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .result-container {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .result-container img {
+            max-width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .download-btn {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 16px;
+        }
+        .download-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 20px;
+            }
+            form {
+                padding: 15px;
+            }
+            button, .download-btn {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            input[type="file"], input[type="text"], select {
+                font-size: 14px;
+            }
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Converter</h1>
+    <div class="container">
+        <form id="imageForm">
+            <label for="imageInput">Upload Image (JPEG, PNG, JPG, WebP):</label>
+            <input type="file" id="imageInput" accept="image/jpeg, image/png, image/jpg, image/webp" required>
+            <label for="fileName">File Name (Optional):</label>
+            <input type="text" id="fileName" placeholder="Enter file name without extension">
+            <label for="formatSelect">Select Output Format:</label>
+            <select id="formatSelect">
+                <option value="jpeg">JPEG</option>
+                <option value="png">PNG</option>
+                <option value="jpg">JPG</option>
+                <option value="webp">WebP</option>
+            </select>
+            <button type="submit">Convert</button>
+        </form>
+
+        <div class="result-container">
+            <img id="resultImage" style="display:none;">
+            <a id="downloadBtn" class="download-btn" style="display:none;" download>Download Converted Image</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function() {
+            const formatSelect = document.getElementById('formatSelect');
+            const fileExtension = this.files[0].name.split('.').pop().toLowerCase();
+            const options = {
+                jpeg: ['png', 'jpg', 'webp'],
+                png: ['jpeg', 'jpg', 'webp'],
+                jpg: ['jpeg', 'png', 'webp'],
+                webp: ['jpeg', 'png', 'jpg']
+            };
+
+            formatSelect.innerHTML = '';
+            options[fileExtension].forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.innerHTML = option.toUpperCase();
+                formatSelect.appendChild(opt);
+            });
+        });
+
+        document.getElementById('imageForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const imageInput = document.getElementById('imageInput').files[0];
+            const formatSelect = document.getElementById('formatSelect').value;
+            let fileName = document.getElementById('fileName').value.trim();
+
+            if (!fileName) {
+                fileName = imageInput.name.split('.').slice(0, -1).join('.') || 'converted';
+            }
+
+            if (imageInput) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+
+                        const resultImage = document.getElementById('resultImage');
+                        const downloadBtn = document.getElementById('downloadBtn');
+                        const quality = 1.0;
+
+                        const convertedImage = canvas.toDataURL(`image/${formatSelect}`, quality);
+
+                        resultImage.src = convertedImage;
+                        resultImage.style.display = 'block';
+
+                        downloadBtn.href = convertedImage;
+                        downloadBtn.download = `${fileName}.${formatSelect}`;
+                        downloadBtn.textContent = 'Download Converted Image';
+                        downloadBtn.style.display = 'block';
+                    };
+                };
+                reader.readAsDataURL(imageInput);
+            }
+        });
+    </script>
+</body>
+</html>
