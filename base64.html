@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clearkey Hex to Base64 Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            transition: color 0.3s ease;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:hover, textarea:hover {
+            border-color: #28a745;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .result-container {
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 100%;
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .combined-container, .key-container {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .toggle-btn {
+            margin-bottom: 20px;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: stretch;
+            }
+            form, .result-container {
+                max-width: 48%;
+                margin-bottom: 0;
+            }
+            .result-container {
+                margin-top: 0;
+            }
+        }
+        @media (max-width: 767px) {
+            button {
+                width: 100%;
+                margin-right: 0;
+                margin-top: 10px;
+            }
+            .result-container {
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+        /* Dark Mode */
+        .dark-mode {
+            background-color: #121212;
+        }
+        .dark-mode h1, .dark-mode label {
+            color: #e0e0e0;
+        }
+        .dark-mode form {
+            background-color: #1e1e1e;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+        .dark-mode pre {
+            background-color: #1e1e1e;
+            color: #cfcfcf;
+        }
+        .dark-mode button {
+            background-color: #1db954;
+        }
+    </style>
+</head>
+<body>
+    <h1>Clearkey Hex to Base64 Converter</h1>
+    <div class="container">
+        <button type="button" class="toggle-btn" onclick="toggleInputMode()">Switch to Key ID & Key Mode</button>
+
+        <form id="keyForm">
+            <div id="keyContainer" class="key-container hidden">
+                <div>
+                    <label>Key ID:</label>
+                    <input type="text" name="kid[]">
+                    <label>Key:</label>
+                    <input type="text" name="key[]">
+                </div>
+            </div>
+            <div id="combinedContainer" class="combined-container">
+                <label>Combined Key ID and Key (Separated by a semicolon):</label>
+                <div>
+                    <textarea name="combined" rows="4" placeholder="Enter multiple combined keys, one per line or separated by spaces"></textarea>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" id="addKeyButton" class="hidden" onclick="addKeyField()">Add Another Key</button>
+                <button type="button" id="addCombinedButton" onclick="addCombinedField()">Add Another Combined Key</button>
+                <button type="submit">Convert to JSON</button>
+                <button type="button" onclick="clearAll()">Clear All</button>
+            </div>
+        </form>
+
+        <div class="result-container">
+            <pre id="result"></pre>
+            <div class="btn-group">
+                <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy JSON</button>
+                <button type="button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isCombinedMode = true;
+
+        function toggleInputMode() {
+            const keyContainer = document.getElementById('keyContainer');
+            const combinedContainer = document.getElementById('combinedContainer');
+            const addKeyButton = document.getElementById('addKeyButton');
+            const addCombinedButton = document.getElementById('addCombinedButton');
+            const toggleBtn = document.querySelector('.toggle-btn');
+
+            if (isCombinedMode) {
+                // Switch to Key ID & Key Mode
+                keyContainer.classList.remove('hidden');
+                combinedContainer.classList.add('hidden');
+                addKeyButton.classList.remove('hidden');
+                addCombinedButton.classList.add('hidden');
+                toggleBtn.textContent = 'Switch to Combined Keys Mode';
+            } else {
+                // Switch to Combined Keys Mode
+                keyContainer.classList.add('hidden');
+                combinedContainer.classList.remove('hidden');
+                addKeyButton.classList.add('hidden');
+                addCombinedButton.classList.remove('hidden');
+                toggleBtn.textContent = 'Switch to Key ID & Key Mode';
+            }
+
+            isCombinedMode = !isCombinedMode;
+        }
+
+        function addKeyField() {
+            const container = document.getElementById('keyContainer');
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <label>Key ID:</label>
+                <input type="text" name="kid[]">
+                <label>Key:</label>
+                <input type="text" name="key[]">
+            `;
+            container.appendChild(div);
+        }
+
+        function addCombinedField() {
+            const container = document.getElementById('combinedContainer');
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <textarea name="combined" rows="2"></textarea>
+            `;
+            container.appendChild(div);
+        }
+
+        document.getElementById('keyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const keys = [];
+
+            if (isCombinedMode) {
+                // Handle Combined Key Mode
+                let combinedInputs = formData.getAll('combined');
+                combinedInputs.forEach(input => {
+                    const combinedKeys = input.trim().split(/\s+/); // Split by spaces or newlines
+                    combinedKeys.forEach(item => {
+                        if (item.includes(':')) {
+                            const [kid, key] = item.split(':');
+                            if (!validateHex(kid) || !validateHex(key)) {
+                                alert("Please enter valid hexadecimal values.");
+                                return;
+                            }
+                            keys.push({
+                                "kty": "oct",
+                                "kid": hexToBase64(kid),
+                                "k": hexToBase64(key)
+                            });
+                        }
+                    });
+                });
+            } else {
+                // Handle Key ID & Key Mode
+                for (let i = 0; i < formData.getAll('kid[]').length; i++) {
+                    const kidHex = formData.getAll('kid[]')[i];
+                    const keyHex = formData.getAll('key[]')[i];
+
+                    if (!validateHex(kidHex) || !validateHex(keyHex)) {
+                        alert("Please enter valid hexadecimal values.");
+                        return;
+                    }
+
+                    keys.push({
+                        "kty": "oct",
+                        "kid": hexToBase64(kidHex),
+                        "k": hexToBase64(keyHex)
+                    });
+                }
+            }
+
+            const result = {
+                "keys": keys,
+                "type": "temporary"
+            };
+            document.getElementById('result').textContent = JSON.stringify(result, null, 4);
+        });
+
+        function hexToBase64(hexString) {
+            const byteArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
+            const base64String = btoa(String.fromCharCode(...byteArray));
+            return base64String.replace(/=/g, ''); // Remove padding
+        }
+
+        function validateHex(value) {
+            return /^[0-9a-fA-F]+$/.test(value);
+        }
+
+        function copyToClipboard() {
+            const resultElement = document.getElementById('result');
+            const range = document.createRange();
+            range.selectNode(resultElement);
+            window.getSelection().removeAllRanges(); // clear current selection
+            window.getSelection().addRange(range); // to select text
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges(); // to deselect
+        }
+
+        function clearAll() {
+            document.getElementById('keyForm').reset();
+            document.getElementById('result').textContent = '';
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+    </script>
+</body>
+  </html>
