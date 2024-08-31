@@ -21,25 +21,25 @@
     </header>
     <main id="home" class="container">
         <section id="extractor">
-            <input type="text" id="mpd-url" placeholder="Enter MPD URL">
-            <button onclick="extractData()">Submit</button>
+            <input type="text" id="mpd-url" placeholder="Enter MPD URL" class="form-control">
+            <button onclick="extractData()" class="btn btn-primary mt-2">Submit</button>
         </section>
-        <section id="results" class="results">
+        <section id="results" class="results mt-4">
             <h2>Results</h2>
             <div class="result-box">
                 <p><strong>KIDs:</strong></p>
-                <textarea id="kid-output" readonly></textarea>
-                <button onclick="copyToClipboard('kid-output')">Copy KID</button>
+                <textarea id="kid-output" class="form-control" readonly></textarea>
+                <button onclick="copyToClipboard('kid-output')" class="btn btn-secondary mt-2">Copy KID</button>
             </div>
-            <div class="result-box">
+            <div class="result-box mt-3">
                 <p><strong>PSSHs:</strong></p>
-                <textarea id="pssh-output" readonly></textarea>
-                <button onclick="copyToClipboard('pssh-output')">Copy PSSH</button>
+                <textarea id="pssh-output" class="form-control" readonly></textarea>
+                <button onclick="copyToClipboard('pssh-output')" class="btn btn-secondary mt-2">Copy PSSH</button>
             </div>
             <p><strong>Credit:</strong> <span id="credit-output"></span></p>
         </section>
     </main>
-    <footer id="about">
+    <footer id="about" class="mt-4">
         <section>
             <h2>About This Site</h2>
             <p>
@@ -58,80 +58,46 @@
     </footer>
     <script src="script.js"></script>
     <script>
-        $(document).ready(function() {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-            });
+    $(document).ready(function() {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        });
 
-            swalWithBootstrapButtons.fire({
-                title: "Buddy ✘ IpTv",
-                text: "Join Our Telegram Channel!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Click To Join',
-                cancelButtonText: 'Already Joined',
-                reverseButtons: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Redirecting.',
-                        text: 'You are now being redirected to our channel, make sure to join it!',
-                        timer: 1500,
-                        timerProgressBar: true,
-                        icon: 'success'
-                    });
-                    setTimeout(RedirectUrl, 1500);
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    Swal.fire({
-                        title: 'Great!',
-                        text: '',
-                        timer: 1000,
-                        timerProgressBar: true,
-                        icon: 'success'
-                    });
-                }
-            });
-
-            function RedirectUrl() {
-                window.location.href = "https://t.me/Buddyxiptv";
+        swalWithBootstrapButtons.fire({
+            title: "Buddy ✘ IpTv",
+            text: "Join Our Telegram Channel!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Click To Join',
+            cancelButtonText: 'Already Joined',
+            reverseButtons: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Redirecting.',
+                    text: 'You are now being redirected to our channel, make sure to join it!',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    icon: 'success'
+                });
+                setTimeout(() => {
+                    window.location.href = "https://t.me/Buddyxiptv";
+                }, 1500);
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    title: 'Great!',
+                    text: '',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    icon: 'success'
+                });
             }
         });
-    </script>
-    <script>
-        (function(){
-            function c(){
-                var b = a.contentDocument || a.contentWindow.document;
-                if (b) {
-                    var d = b.createElement('script');
-                    d.innerHTML = "window.__CF$cv$params={r:'8bbc0f8b9a5c9f71',t:'MTcyNTA5NzI0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
-                    b.getElementsByTagName('head')[0].appendChild(d);
-                }
-            }
-            if (document.body) {
-                var a = document.createElement('iframe');
-                a.height = 1;
-                a.width = 1;
-                a.style.position = 'absolute';
-                a.style.top = 0;
-                a.style.left = 0;
-                a.style.border = 'none';
-                a.style.visibility = 'hidden';
-                document.body.appendChild(a);
-                if ('loading' !== document.readyState) c();
-                else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
-                else {
-                    var e = document.onreadystatechange || function(){};
-                    document.onreadystatechange = function(b){
-                        e(b);
-                        'loading' !== document.readyState && (document.onreadystatechange = e, c());
-                    }
-                }
-            }
-        })();
+    });
     </script>
 </body>
 </html>
