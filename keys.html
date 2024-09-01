@@ -24,7 +24,7 @@
             <input type="text" id="mpd-url" placeholder="Enter MPD URL" class="form-control">
             <button onclick="extractData()" class="btn btn-primary mt-2">Submit</button>
         </section>
-        <section id="results" class="results mt-4">
+        <section id="results" class="results mt-4" style="display: none;">
             <h2>Results</h2>
             <div class="result-box">
                 <p><strong>KIDs:</strong></p>
@@ -57,47 +57,5 @@
         </section>
     </footer>
     <script src="script.js"></script>
-    <script>
-    $(document).ready(function() {
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-danger'
-            },
-            buttonsStyling: false
-        });
-
-        swalWithBootstrapButtons.fire({
-            title: "Buddy ✘ IpTv",
-            text: "Join Our Telegram Channel!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Click To Join',
-            cancelButtonText: 'Already Joined',
-            reverseButtons: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Redirecting.',
-                    text: 'You are now being redirected to our channel, make sure to join it!',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    icon: 'success'
-                });
-                setTimeout(() => {
-                    window.location.href = "https://t.me/Buddyxiptv";
-                }, 1500);
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                Swal.fire({
-                    title: 'Great!',
-                    text: '',
-                    timer: 1000,
-                    timerProgressBar: true,
-                    icon: 'success'
-                });
-            }
-        });
-    });
-    </script>
 </body>
 </html>
