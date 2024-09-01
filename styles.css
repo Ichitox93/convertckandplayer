@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
     background: linear-gradient(to bottom, #4e92e2, #67b3ff);
@@ -6,6 +7,7 @@ body {
     padding: 0;
 }
 
+/* Header */
 header {
     background-color: #0056b3;
     padding: 10px 0;
@@ -18,6 +20,7 @@ header .top-bar h1 {
     font-size: 1.5em;
 }
 
+/* Navigation */
 nav {
     background-color: #003f7f;
     padding: 10px 0;
@@ -35,12 +38,14 @@ nav a.active {
     background-color: #004f99;
 }
 
+/* Container */
 .container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
 }
 
+/* Extractor Section */
 #extractor {
     display: flex;
     flex-direction: column;
@@ -53,6 +58,9 @@ input#mpd-url {
     padding: 10px;
     width: 100%;
     max-width: 500px;
+    background-color: #fff; /* Background putih untuk input */
+    color: #000; /* Teks hitam untuk input */
+    border: 1px solid #ccc; /* Border terang untuk input */
 }
 
 button {
@@ -71,6 +79,7 @@ button:hover {
     background-color: #004f99; /* Warna tombol saat di-hover */
 }
 
+/* Results Section */
 .results h2 {
     text-align: center;
     margin-bottom: 20px;
@@ -99,15 +108,16 @@ button:hover {
     width: 100%;
     max-width: 200px;
     margin: 10px auto 0 auto;
-    background-color: #0056b3; /* Warna tombol */
+    background-color: #0056b3; /* Warna tombol dalam result-box */
     color: white;
     border: none;
 }
 
 .result-box button:hover {
-    background-color: #004f99; /* Warna tombol saat di-hover */
+    background-color: #004f99; /* Warna tombol saat di-hover dalam result-box */
 }
 
+/* Footer */
 footer {
     background-color: #004085;
     padding: 20px 0;
