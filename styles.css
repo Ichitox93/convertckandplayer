@@ -54,29 +54,29 @@ nav a.active {
 }
 
 input#mpd-url {
+    background-color: #fff; /* Background putih untuk input */
+    color: #000; /* Teks hitam untuk input */
+    border: 1px solid #ccc; /* Border terang untuk input */
     border-radius: 5px;
     padding: 10px;
     width: 100%;
     max-width: 500px;
-    background-color: #fff; /* Background putih untuk input */
-    color: #000; /* Teks hitam untuk input */
-    border: 1px solid #ccc; /* Border terang untuk input */
 }
 
 button {
+    background-color: #0056b3; /* Warna tombol */
+    color: white;
+    border: none;
     border-radius: 5px;
     padding: 10px 20px;
     width: 100%;
     max-width: 200px;
     text-align: center;
     margin-top: 10px;
-    background-color: #0056b3; /* Warna tombol */
-    color: white;
-    border: none;
 }
 
 button:hover {
-    background-color: #004f99; /* Warna tombol saat di-hover */
+    background-color: #004f99; /* Warna tombol saat hover */
 }
 
 /* Results Section */
@@ -87,8 +87,8 @@ button:hover {
 }
 
 .result-box {
-    background-color: #fff;
-    color: #333;
+    background-color: #fff; /* Background putih untuk box hasil */
+    color: #333; /* Teks gelap untuk kontras */
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 20px;
@@ -102,19 +102,22 @@ button:hover {
     padding: 10px;
     height: 100px;
     margin-top: 10px;
+    border: 1px solid #ccc; /* Border untuk textarea */
 }
 
 .result-box button {
-    width: 100%;
-    max-width: 200px;
-    margin: 10px auto 0 auto;
     background-color: #0056b3; /* Warna tombol dalam result-box */
     color: white;
     border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 200px;
+    margin: 10px auto 0 auto;
 }
 
 .result-box button:hover {
-    background-color: #004f99; /* Warna tombol saat di-hover dalam result-box */
+    background-color: #004f99; /* Warna tombol saat hover dalam result-box */
 }
 
 /* Footer */
