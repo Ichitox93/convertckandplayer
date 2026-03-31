@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VELOX — Live Stream</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/shaka-player/dist/controls.min.css" rel="stylesheet">
+<style>
+:root {
+  --ink:      #06070a;
+  --ink1:     #0c0e13;
+  --ink2:     #111420;
+  --ink3:     #161a28;
+  --ink4:     #1c2235;
+  --border:   #1e2438;
+  --border2:  #28304f;
+  --gold:     #f5c842;
+  --gold2:    #e6a800;
+  --gold-dim: rgba(245,200,66,0.12);
+  --gold-glow:rgba(245,200,66,0.20);
+  --live:     #f0414a;
+  --live-glow:rgba(240,65,74,0.22);
+  --tx0: #f0f2f8;
+  --tx1: #9ba4c0;
+  --tx2: #525d7a;
+  --tx3: #2a3250;
+  --f-d: 'Bebas Neue', sans-serif;
+  --f-b: 'Outfit', sans-serif;
+  --f-m: 'Fira Code', monospace;
+  --sb: 300px;       /* sidebar width */
+  --th: 52px;        /* topbar height */
+  --nb: 46px;        /* nowbar height */
+  --stb: 24px;       /* statusbar height */
+  --sb-trans: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--f-b);background:var(--ink);color:var(--tx0);font-size:13px;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOPBAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#topbar {
+  height: var(--th);
+  background: var(--ink1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 400;
+}
+#topbar::after {
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,var(--gold2) 40%,var(--gold) 50%,var(--gold2) 60%,transparent 100%);
+  opacity:0.4;
+}
+
+/* Toggle sidebar button */
+#sbToggle {
+  width:36px;height:36px;
+  background:var(--ink3);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--tx1);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:all .2s;
+  font-size:16px;
+}
+#sbToggle:hover{border-color:var(--gold2);color:var(--gold);background:var(--gold-dim)}
+#sbToggle.open{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+
+.brand {
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.brand-mark {
+  width:32px;height:32px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  box-shadow:0 0 16px var(--gold-glow);
+  flex-shrink:0;
+}
+.brand-name{font-family:var(--f-d);font-size:22px;letter-spacing:4px;color:var(--tx0);line-height:1}
+.brand-name span{background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-sub{font-family:var(--f-m);font-size:8px;letter-spacing:3px;color:var(--tx2);margin-top:2px}
+
+.vl{width:1px;height:28px;background:var(--border2);flex-shrink:0}
+
+#urlRow {
+  flex:1;display:flex;align-items:center;
+  background:var(--ink3);border:1px solid var(--border);border-radius:9px;
+  overflow:hidden;transition:border-color .2s,box-shadow .2s;
+}
+#urlRow:focus-within{border-color:var(--gold2);box-shadow:0 0 0 3px var(--gold-dim)}
+.url-lbl{
+  height:36px;padding:0 11px;
+  font-family:var(--f-m);font-size:9px;font-weight:500;
+  color:var(--gold2);letter-spacing:1px;
+  border-right:1px solid var(--border);
+  display:flex;align-items:center;
+  background:rgba(245,200,66,.04);white-space:nowrap;
+}
+#urlInput{
+  flex:1;height:36px;background:transparent;border:none;outline:none;
+  color:var(--tx1);font-family:var(--f-m);font-size:11px;padding:0 12px;
+}
+#urlInput::placeholder{color:var(--tx3)}
+#loadBtn{
+  height:36px;padding:0 18px;
+  background:linear-gradient(90deg,var(--gold2),var(--gold));
+  border:none;color:var(--ink);
+  font-family:var(--f-d);font-size:14px;letter-spacing:2px;
+  cursor:pointer;transition:opacity .15s,box-shadow .15s;
+}
+#loadBtn:hover{opacity:.88;box-shadow:0 0 16px var(--gold-glow)}
+
+/* ── URL loaded state ── */
+#urlRow.loaded { background: var(--ink2); border-color: var(--border); cursor: default; }
+#urlRow.loaded:focus-within { border-color: var(--border); box-shadow: none; }
+#urlRow.loaded .url-lbl { color: var(--tx2); background: transparent; border-right-color: var(--border); }
+#urlRow.loaded #urlInput,
+#urlRow.loaded #loadBtn { display: none; }
+#playlistInfo {
+  display: none;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  min-width: 0;
+  height: 36px;
+}
+#urlRow.loaded #playlistInfo { display: flex; }
+.pl-name {
+  font-family: var(--f-b);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tx0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.pl-count {
+  font-family: var(--f-m);
+  font-size: 10px;
+  color: var(--gold2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pl-change {
+  height: 24px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  color: var(--tx2);
+  font-family: var(--f-m);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .18s;
+}
+.pl-change:hover { border-color: var(--gold2); color: var(--gold); background: var(--gold-dim); }
+
+.tb-actions{display:flex;gap:7px;flex-shrink:0}
+.tb-btn {
+  height:36px;padding:0 13px;
+  background:var(--ink3);border:1px solid var(--border);border-radius:8px;
+  color:var(--tx1);font-family:var(--f-b);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.tb-btn svg{width:13px;height:13px;flex-shrink:0}
+.tb-btn:hover{border-color:var(--gold2);color:var(--gold);background:var(--gold-dim)}
+.tb-btn.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BODY WRAPPER
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#body{flex:1;display:flex;overflow:hidden;position:relative}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SIDEBAR  (slides over player)
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#sidebar {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sb);
+  background: var(--ink1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 300;
+  transform: translateX(calc(-1 * var(--sb)));
+  transition: var(--sb-trans);
+  box-shadow: 4px 0 40px rgba(0,0,0,.7);
+  will-change: transform;
+}
+#sidebar.open{transform:translateX(0)}
+
+/* Thin hover zone on left edge to peek sidebar */
+#sbEdge {
+  position:absolute;top:0;left:0;bottom:0;width:6px;
+  z-index:299;cursor:e-resize;
+}
+#sbEdge::after {
+  content:'';
+  position:absolute;top:50%;left:1px;
+  transform:translateY(-50%);
+  width:3px;height:40px;
+  background:var(--gold-dim);
+  border-radius:3px;
+  transition:background .2s;
+}
+#sbEdge:hover::after{background:var(--gold-glow)}
+
+/* Backdrop overlay when sidebar open on mobile */
+#sbBackdrop {
+  display:none;
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.5);
+  z-index:298;
+  backdrop-filter:blur(2px);
+  cursor:pointer;
+}
+
+/* Search */
+.sb-top{padding:10px 10px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sw{display:flex;align-items:center;background:var(--ink3);border:1px solid var(--border);border-radius:7px;padding:0 10px;gap:7px;transition:border-color .2s}
+.sw:focus-within{border-color:var(--gold2)}
+.sw-icon{color:var(--tx2);font-size:14px;flex-shrink:0}
+#searchInput{flex:1;height:31px;background:transparent;border:none;outline:none;color:var(--tx0);font-size:12px;font-family:var(--f-b)}
+#searchInput::placeholder{color:var(--tx2)}
+
+/* Group pills */
+#groupTabs{
+  display:flex;overflow-x:auto;
+  padding:7px 9px;gap:5px;
+  border-bottom:1px solid var(--border);
+  scrollbar-width:none;flex-shrink:0;
+}
+#groupTabs::-webkit-scrollbar{display:none}
+.grpTab{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:20px;
+  font-size:11px;font-weight:600;color:var(--tx2);
+  cursor:pointer;white-space:nowrap;
+  border:1px solid transparent;transition:all .16s;flex-shrink:0;
+}
+.grpTab:hover{color:var(--tx1);border-color:var(--border2);background:var(--ink3)}
+.grpTab.active{background:var(--gold-dim);border-color:var(--gold2);color:var(--gold)}
+.grp-n{font-family:var(--f-m);font-size:9px;background:var(--ink4);color:var(--tx2);padding:1px 5px;border-radius:10px;transition:all .16s}
+.grpTab.active .grp-n{background:rgba(245,200,66,.15);color:var(--gold2)}
+
+/* Channel list */
+#channelList{flex:1;overflow-y:auto;padding:5px 7px}
+.ch-empty{text-align:center;padding:36px 16px;color:var(--tx2);font-size:12px;line-height:2}
+.ch-empty-icon{font-size:34px;display:block;margin-bottom:8px;opacity:.28}
+
+.chItem {
+  display:flex;align-items:center;gap:9px;
+  padding:7px 9px;border-radius:9px;
+  cursor:pointer;
+  border:1px solid transparent;
+  margin-bottom:1px;
+  transition:background .1s,transform .1s,border-color .1s;
+  animation:itemIn .22s ease both;
+  position:relative;
+}
+@keyframes itemIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.chItem:hover{background:var(--ink3);transform:translateX(3px)}
+.chItem.active{background:linear-gradient(90deg,var(--gold-dim),transparent);border-color:rgba(245,200,66,.18)}
+.chItem.active::before{
+  content:'';position:absolute;left:0;top:7px;bottom:7px;
+  width:3px;background:linear-gradient(180deg,var(--gold),var(--gold2));
+  border-radius:2px;box-shadow:0 0 10px var(--gold-glow);
+}
+.ch-num{font-family:var(--f-m);font-size:9px;color:var(--tx3);width:18px;text-align:right;flex-shrink:0}
+.chItem.active .ch-num{color:var(--gold2)}
+.ch-logo-box{width:44px;height:30px;border-radius:5px;background:var(--ink4);border:1px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
+.chItem.active .ch-logo-box{border-color:rgba(245,200,66,.3)}
+.ch-logo{width:100%;height:100%;object-fit:contain;padding:3px}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:12px;font-weight:500;color:var(--tx0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chItem.active .ch-name{color:var(--gold)}
+.ch-cat{font-size:10px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.ch-add{width:24px;height:24px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--tx2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1}
+.ch-add:hover{border-color:var(--gold2);color:var(--gold);background:var(--gold-dim)}
+
+.sb-foot{padding:8px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--ink2)}
+.sf-s{font-family:var(--f-m);font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:6px}
+.sf-s b{color:var(--gold)}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold-glow);animation:pd 2s infinite}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CENTER  (always full width)
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#center{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PLAYER ZONE
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#playerZone{
+  flex:1;
+  position:relative;
+  background:#000;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Gold top accent line */
+#playerZone::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold-dim) 30%,var(--gold-dim) 70%,transparent);
+  z-index:5;pointer-events:none;
+}
+
+/* Single player — centered 16:9 */
+#singlePlayer{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.player-inner{
+  position:relative;
+  width:100%;height:100%;
+}
+[data-shaka-player-container]{width:100%;height:100%}
+#video{width:100%;height:100%;background:#000;display:block}
+
+/* Placeholder */
+#placeholder{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;
+  background:radial-gradient(ellipse at center,var(--ink2) 0%,var(--ink) 70%);
+  z-index:1;
+}
+.ph-rings{position:relative;width:90px;height:90px}
+.ph-r{position:absolute;border-radius:50%;border:1px solid var(--border2);animation:rp 5s ease-in-out infinite}
+.ph-r:nth-child(1){inset:0;animation-duration:5s}
+.ph-r:nth-child(2){inset:15px;animation-duration:3.5s;animation-direction:reverse;border-color:var(--border)}
+.ph-r:nth-child(3){inset:30px;animation-duration:2.2s;border-color:rgba(245,200,66,.3)}
+@keyframes rp{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.8;transform:scale(1.06)}}
+.ph-core{position:absolute;inset:38px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.ph-t{font-family:var(--f-d);font-size:20px;letter-spacing:5px;color:var(--tx1)}
+.ph-s{font-size:12px;color:var(--tx2);letter-spacing:.5px;text-align:center;max-width:280px;line-height:1.6}
+/* Hint to swipe/click edge */
+.ph-hint{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--f-m);font-size:10px;color:var(--tx3);
+  letter-spacing:.5px;
+  margin-top:4px;
+}
+.ph-hint-arrow{
+  width:24px;height:24px;border-radius:5px;
+  background:var(--ink3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  animation:arrowBounce 2s ease-in-out infinite;
+}
+@keyframes arrowBounce{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+
+/* Loading overlay */
+#loadingOverlay{
+  position:absolute;inset:0;
+  background:rgba(6,7,10,.88);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;z-index:20;backdrop-filter:blur(5px);
+}
+#loadingOverlay.hidden{display:none}
+.ld-ring{position:relative;width:50px;height:50px}
+.ld-ring::before,.ld-ring::after{content:'';position:absolute;border-radius:50%;border:2px solid transparent}
+.ld-ring::before{inset:0;border-top-color:var(--gold);animation:spin .9s linear infinite}
+.ld-ring::after{inset:8px;border-top-color:var(--gold2);animation:spin 1.4s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-core{position:absolute;inset:17px;display:flex;align-items:center;justify-content:center;font-size:13px}
+#loadingText{font-family:var(--f-m);font-size:11px;color:var(--tx1);letter-spacing:2px}
+
+/* Multi grid */
+#multiGrid{display:none;position:absolute;inset:0;gap:2px;background:#000}
+.grid-1{display:grid;grid-template-columns:1fr}
+.grid-2{display:grid;grid-template-columns:1fr 1fr}
+.grid-3{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.grid-3 .multiCell:first-child{grid-column:1/-1}
+.grid-4{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.multiCell{position:relative;background:var(--ink2);overflow:hidden}
+.multiCell video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.cellLabel{
+  position:absolute;top:9px;left:9px;
+  background:rgba(6,7,10,.82);backdrop-filter:blur(8px);
+  border:1px solid rgba(245,200,66,.22);color:var(--gold);
+  font-family:var(--f-m);font-size:10px;padding:3px 9px;border-radius:5px;
+  pointer-events:none;letter-spacing:.5px;
+}
+.cellClose{
+  position:absolute;top:7px;right:7px;
+  width:24px;height:24px;
+  background:rgba(240,65,74,.82);border:none;border-radius:5px;
+  color:#fff;font-size:11px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.cellClose:hover{background:var(--live)}
+.multiCell.focused{outline:2px solid var(--gold);outline-offset:-2px}
+
+/* EPG panel */
+#epgPanel{
+  position:absolute;top:0;right:0;bottom:0;width:320px;
+  background:var(--ink1);border-left:1px solid var(--border);
+  z-index:50;
+  transform:translateX(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:-8px 0 40px rgba(0,0,0,.5);
+}
+#epgPanel.open{transform:translateX(0)}
+#epgHead{padding:14px 13px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--ink2)}
+.epg-hl{display:flex;align-items:center;gap:9px}
+.epg-tag{font-family:var(--f-m);font-size:8px;font-weight:500;letter-spacing:2px;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold2);padding:3px 8px;border-radius:4px}
+.epg-ttl{font-family:var(--f-d);font-size:17px;letter-spacing:3px;color:var(--tx0)}
+#epgClose{width:29px;height:29px;background:var(--ink3);border:1px solid var(--border2);border-radius:7px;color:var(--tx1);cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s}
+#epgClose:hover{border-color:var(--live);color:var(--live)}
+#epgChName{font-size:13px;font-weight:600;color:var(--tx0);padding:10px 13px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+#epgContent{flex:1;overflow-y:auto;padding:8px 10px}
+#epgNoData{padding:30px 10px;text-align:center;color:var(--tx2);font-size:12px;line-height:1.8}
+.epgItem{padding:8px 10px;border-radius:7px;margin-bottom:3px;border-left:2px solid transparent;transition:background .1s}
+.epgItem:hover{background:var(--ink3)}
+.epgItem.now{background:linear-gradient(90deg,var(--gold-dim),transparent);border-left-color:var(--gold)}
+.epgTime{font-family:var(--f-m);font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:7px;margin-bottom:2px}
+.epgItem.now .epgTime{color:var(--gold2)}
+.epgOnAir{background:var(--gold);color:var(--ink);font-family:var(--f-m);font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;letter-spacing:1px}
+.epgTitle{font-size:12px;color:var(--tx1);line-height:1.4}
+.epgItem.now .epgTitle{color:var(--tx0);font-weight:500}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NOW BAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#nowBar{
+  height:var(--nb);
+  background:var(--ink2);border-top:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+#nowBar::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 4px);
+  pointer-events:none;
+}
+.live-pill{display:flex;align-items:center;gap:5px;background:var(--live-glow);border:1px solid rgba(240,65,74,.38);border-radius:5px;padding:4px 9px;flex-shrink:0;transition:opacity .3s}
+.live-pill.idle{opacity:0;pointer-events:none}
+.lp-dot{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);animation:pd 1.2s infinite}
+.lp-txt{font-family:var(--f-m);font-size:9px;font-weight:500;color:var(--live);letter-spacing:2px}
+#npLogo{width:40px;height:27px;object-fit:contain;border-radius:4px;background:var(--ink4);border:1px solid var(--border);flex-shrink:0}
+.np-info{flex:1;min-width:0}
+#npName{font-size:13px;font-weight:600;color:var(--tx0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#npProg{font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+#npClock{font-family:var(--f-m);font-size:17px;font-weight:500;color:var(--gold);flex-shrink:0;letter-spacing:1px;text-shadow:0 0 18px var(--gold-dim)}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   STATUS BAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#statusBar{
+  height:var(--stb);background:var(--ink);border-top:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;flex-shrink:0;
+}
+.sb-s{display:flex;align-items:center;gap:5px;font-family:var(--f-m);font-size:10px;color:var(--tx2);padding:0 13px;border-right:1px solid var(--border)}
+.sb-s:first-child{padding-left:0}
+.sb-s:last-child{border-right:none;margin-left:auto;padding-right:0}
+.sb-s b{color:var(--tx1)}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 5px var(--gold-glow)}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SHAKA UI OVERRIDES
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.shaka-overflow-menu,.shaka-settings-menu{
+  background:rgba(6,7,10,.93)!important;
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border2)!important;
+  border-radius:10px!important;
+  box-shadow:0 8px 32px rgba(0,0,0,.6)!important;
+}
+.shaka-overflow-menu button:hover,.shaka-settings-menu button:hover{
+  background:rgba(245,200,66,.08)!important;color:var(--gold)!important;
+}
+.shaka-spinner svg{stroke:var(--gold)!important}
+.shaka-controls-button-panel{
+  background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 100%)!important;
+  padding-bottom:6px!important;
+}
+.shaka-seek-bar{accent-color:var(--gold)!important}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOAST
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#toast{
+  position:fixed;bottom:34px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--ink3);border:1px solid var(--border2);
+  color:var(--tx0);font-family:var(--f-b);font-size:12px;font-weight:500;
+  padding:9px 22px;border-radius:24px;
+  opacity:0;pointer-events:none;z-index:9999;
+  transition:opacity .25s,transform .25s;
+  white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.6);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LANDSCAPE / MOBILE RESPONSIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Tablet portrait */
+@media (max-width: 900px) {
+  :root{--sb:260px}
+  .brand-name{font-size:18px}
+  .url-lbl{display:none}
+  #nowBar{padding:0 10px;gap:8px}
+}
+
+/* Mobile / landscape phone */
+@media (max-width: 600px) {
+  :root{--sb:85vw;--th:46px;--nb:40px}
+  .brand-sub,.brand-sub{display:none}
+  .vl{display:none}
+  .tb-btn span{display:none} /* hide text, keep icon */
+  #urlInput{font-size:10px}
+  #loadBtn{padding:0 12px;font-size:13px}
+  .tb-btn{padding:0 10px}
+  #nowBar .np-info{display:none}
+  #npClock{font-size:14px}
+  .sb-s:nth-child(3),.sb-s:nth-child(4){display:none}
+}
+
+/* Landscape phone (height < 500) — maximize player */
+@media (max-height: 500px) {
+  :root{--th:40px;--nb:36px;--stb:20px}
+  .brand-sub{display:none}
+  .url-lbl{display:none}
+  #statusBar{display:none}
+  #nowBar{height:var(--nb)}
+  #npClock{font-size:14px}
+}
+
+/* Wide screen bonus — sidebar doesn't cover much */
+@media (min-width: 1400px) {
+  :root{--sb:320px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <button id="sbToggle" title="Tampilkan/Sembunyikan Saluran">☰</button>
+
+  <div class="brand">
+    <div class="brand-mark">📺</div>
+    <div>
+      <div class="brand-name">VE<span>LOX</span></div>
+      <div class="brand-sub">LIVE STREAM</div>
+    </div>
+  </div>
+
+  <div class="vl"></div>
+
+  <div id="urlRow">
+    <span class="url-lbl">M3U · URL</span>
+    <input id="urlInput" type="text"
+      placeholder="https://... playlist.m3u8 atau stream langsung"
+      value="https://da.gd/trmback1">
+    <button id="loadBtn">LOAD</button>
+    <div id="playlistInfo">
+      <span class="pl-name" id="plName">—</span>
+      <span class="pl-count" id="plCount"></span>
+      <button class="pl-change" id="plChange">GANTI</button>
+    </div>
+  </div>
+
+  <div class="tb-actions">
+    <button class="tb-btn" id="multiBtn">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
+        <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
+      </svg>
+      <span>MULTI</span>
+    </button>
+    <button class="tb-btn" id="epgBtn">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="1" width="14" height="14" rx="2"/>
+        <line x1="4" y1="5" x2="12" y2="5"/><line x1="4" y1="8" x2="10" y2="8"/><line x1="4" y1="11" x2="8" y2="11"/>
+      </svg>
+      <span>EPG</span>
+    </button>
+  </div>
+</div>
+
+<!-- BODY -->
+<div id="body">
+
+  <!-- Hover edge zone -->
+  <div id="sbEdge"></div>
+
+  <!-- Backdrop for mobile -->
+  <div id="sbBackdrop"></div>
+
+  <!-- SIDEBAR (floats over player) -->
+  <div id="sidebar">
+    <div class="sb-top">
+      <div class="sw">
+        <span class="sw-icon">⌕</span>
+        <input id="searchInput" type="text" placeholder="Cari saluran...">
+      </div>
+    </div>
+
+    <div id="groupTabs"></div>
+
+    <div id="channelList">
+      <div class="ch-empty">
+        <span class="ch-empty-icon">📡</span>
+        Masukkan URL playlist<br>lalu klik <strong>LOAD</strong>
+      </div>
+    </div>
+
+    <div class="sb-foot">
+      <div class="sf-s"><div class="pdot"></div><b id="sfCount">0</b> saluran</div>
+      <div class="sf-s"><b id="sfGroups">0</b> grup</div>
+    </div>
+  </div>
+
+  <!-- CENTER — full width always -->
+  <div id="center">
+    <div id="playerZone">
+
+      <!-- Single player -->
+      <div id="singlePlayer">
+        <div class="player-inner">
+          <div data-shaka-player-container style="width:100%;height:100%">
+            <video autoplay playsinline data-shaka-player id="video"
+              poster="" style="width:100%;height:100%"></video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi grid -->
+      <div id="multiGrid"></div>
+
+      <!-- Loading -->
+      <div id="loadingOverlay" class="hidden">
+        <div class="ld-ring"><div class="ld-core">⚡</div></div>
+        <div id="loadingText">Memuat</div>
+      </div>
+
+      <!-- Placeholder -->
+      <div id="placeholder">
+        <div class="ph-rings">
+          <div class="ph-r"></div><div class="ph-r"></div><div class="ph-r"></div>
+          <div class="ph-core">📺</div>
+        </div>
+        <div class="ph-t">VELOX LIVE</div>
+        <div class="ph-s">Pilih saluran dari daftar untuk mulai streaming</div>
+        <div class="ph-hint">
+          <div class="ph-hint-arrow">›</div>
+          Klik ☰ atau tepi kiri untuk daftar saluran
+        </div>
+      </div>
+
+      <!-- EPG overlay -->
+      <div id="epgPanel">
+        <div id="epgHead">
+          <div class="epg-hl">
+            <span class="epg-tag">EPG</span>
+            <span class="epg-ttl">GUIDE</span>
+          </div>
+          <button id="epgClose">✕</button>
+        </div>
+        <div id="epgChName">—</div>
+        <div id="epgContent">
+          <div id="epgNoData">Pilih saluran untuk melihat panduan program</div>
+          <div id="epgList"></div>
+        </div>
+      </div>
+
+    </div><!-- /playerZone -->
+
+    <!-- Now bar -->
+    <div id="nowBar">
+      <div class="live-pill idle" id="livePill">
+        <div class="lp-dot"></div>
+        <span class="lp-txt">LIVE</span>
+      </div>
+      <img id="npLogo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+      <div class="np-info">
+        <div id="npName">Tidak ada saluran yang diputar</div>
+        <div id="npProg"></div>
+      </div>
+      <div id="npClock">00:00:00</div>
+    </div>
+
+    <!-- Status bar -->
+    <div id="statusBar">
+      <div class="sb-s"><div class="sb-dot"></div>Saluran: <b id="sbCount">0</b></div>
+      <div class="sb-s">Grup: <b id="sbGroups">0</b></div>
+      <div class="sb-s">Mode: <b id="sbMode">Single</b></div>
+      <div class="sb-s" id="sbDate"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mux.js/6.3.0/mux.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/shaka-player/dist/shaka-player.ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/shaka-player.compiled.js" crossorigin="anonymous"></script>
+<script>
+/* ── STATE ─────────────────────────────── */
+let channels=[], groups=[], currentGroup='ALL', searchQuery='';
+let mainPlayer=null, currentChannel=null;
+let multiMode=false, multiPlayers=[];
+let epgData={}, epgUrls=[], epgOpen=false;
+let sidebarOpen=false;
+let sbHoverTimer=null;
+
+/* ── SIDEBAR TOGGLE ─────────────────────── */
+function openSidebar(){
+  sidebarOpen=true;
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sbToggle').classList.add('open');
+  // Show backdrop on narrow screens
+  if(window.innerWidth<=768){
+    const bd=document.getElementById('sbBackdrop');
+    bd.style.display='block';
+    requestAnimationFrame(()=>bd.style.opacity='1');
+  }
+}
+function closeSidebar(){
+  sidebarOpen=false;
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbToggle').classList.remove('open');
+  const bd=document.getElementById('sbBackdrop');
+  bd.style.display='none';
+  bd.style.opacity='0';
+}
+function toggleSidebar(){ sidebarOpen?closeSidebar():openSidebar(); }
+
+document.getElementById('sbToggle').addEventListener('click', toggleSidebar);
+
+// Hover edge zone — open on hover
+const sbEdge = document.getElementById('sbEdge');
+sbEdge.addEventListener('mouseenter',()=>{
+  sbHoverTimer=setTimeout(()=>{ if(!sidebarOpen) openSidebar(); },150);
+});
+sbEdge.addEventListener('mouseleave',()=>{ clearTimeout(sbHoverTimer); });
+
+// Backdrop click closes sidebar
+document.getElementById('sbBackdrop').addEventListener('click', closeSidebar);
+
+// Close sidebar when channel picked on mobile
+function maybeCloseSidebar(){
+  if(window.innerWidth<=768) closeSidebar();
+}
+
+// Auto-open on wide screens, auto-close on narrow
+function handleResize(){
+  if(window.innerWidth>900 && !sidebarOpen){
+    // Don't force-open, just allow hover
+  }
+}
+window.addEventListener('resize', handleResize);
+
+/* ── INIT SHAKA ─────────────────────────── */
+async function initShaka() {
+  shaka.polyfill.installAll();
+  if (!shaka.Player.isBrowserSupported()) { showToast('Browser tidak support Shaka'); return; }
+  await new Promise(resolve => {
+    document.addEventListener('shaka-ui-loaded', resolve, { once: true });
+    if (window.shaka && shaka.ui && shaka.ui.Overlay) {
+      const v = document.getElementById('video');
+      if (v && v.ui) resolve();
+    }
+  });
+  const video = document.getElementById('video');
+  const ui = video.ui;
+  const controls = ui.getControls();
+  mainPlayer = controls.getPlayer();
+  mainPlayer.addEventListener('error', e => { hideLoading(); showToast('✗ '+(e.detail?.message||'Stream error')); });
+  mainPlayer.addEventListener('buffering', e => { e.buffering?showLoading('Buffering'):hideLoading(); });
+}
+
+/* ── PARSE M3U ──────────────────────────── */
+function parseM3U(text) {
+  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const result=[]; let cur=null;
+  for(const line of lines){
+    if(line.startsWith('#EXTINF')){
+      cur={name:'',logo:'',group:'Lainnya',tvgId:'',url:'',clearKey:null,headers:{}};
+      const ci=line.lastIndexOf(','); if(ci!==-1) cur.name=line.substring(ci+1).trim();
+      const lm=line.match(/tvg-logo="([^"]*)"/); if(lm) cur.logo=lm[1];
+      const gm=line.match(/group-title="([^"]*)"/); if(gm) cur.group=gm[1]||'Lainnya';
+      const tm=line.match(/tvg-id="([^"]*)"/); if(tm) cur.tvgId=tm[1];
+    } else if(cur&&line.startsWith('#KODIPROP:inputstream.adaptive.license_key=')){
+      const val=line.split('=').slice(1).join('=').trim();
+      if(val&&val.includes(':')&&!val.startsWith('{')&&val!=='0:0'){
+        const p=val.split(':'); if(p.length===2) cur.clearKey={keyId:p[0],key:p[1]};
+      }
+    } else if(cur&&line.startsWith('#EXTVLCOPT:http-user-agent=')){
+      cur.headers['User-Agent']=line.replace('#EXTVLCOPT:http-user-agent=','').trim();
+    } else if(cur&&line.startsWith('#EXTVLCOPT:http-referrer=')){
+      cur.headers['Referer']=line.replace('#EXTVLCOPT:http-referrer=','').trim();
+    } else if(cur&&line.startsWith('#EXTVLCOPT:http-origin=')){
+      cur.headers['Origin']=line.replace('#EXTVLCOPT:http-origin=','').trim();
+    } else if(cur&&!line.startsWith('#')&&line.length>5){
+      cur.url=line; if(cur.name) result.push({...cur}); cur=null;
+    }
+  }
+  return result;
+}
+
+/* ── LOAD PLAYLIST ──────────────────────── */
+async function loadPlaylist(url) {
+  showToast('Memuat playlist...'); showLoading('Mengambil playlist');
+  try {
+    let text='';
+    try{const r=await fetch(url,{mode:'cors'});if(r.ok)text=await r.text();else throw 0;}
+    catch{const r2=await fetch('https://corsproxy.io/?'+encodeURIComponent(url));if(!r2.ok)throw new Error('Gagal ambil playlist');text=await r2.text();}
+    if(!text.includes('#EXTM3U')&&!text.includes('#EXTINF')){
+      hideLoading(); await playChannel({name:'Direct Stream',url,group:'Live',logo:'',clearKey:null,headers:{}}); return;
+    }
+    channels=parseM3U(text);
+    const em=text.match(/url-tvg="([^"]*)"/); if(em) epgUrls=em[1].split(',').map(u=>u.trim()).filter(Boolean);
+    buildGroupTabs(); renderChannelList(); hideLoading();
+    ['sfCount','sbCount'].forEach(id=>document.getElementById(id).textContent=channels.length);
+    ['sfGroups','sbGroups'].forEach(id=>document.getElementById(id).textContent=groups.length);
+    showToast(`✓ ${channels.length} saluran · ${groups.length} grup`);
+    // Hide URL, show playlist info
+    const row = document.getElementById('urlRow');
+    row.classList.add('loaded');
+    // Extract nice name from URL
+    let plName = url.split('/').pop().split('?')[0] || url;
+    if(plName.length > 40) plName = plName.substring(0, 40) + '…';
+    if(plName === url) {
+      try { plName = new URL(url).hostname; } catch{}
+    }
+    document.getElementById('plName').textContent = plName;
+    document.getElementById('plCount').textContent = channels.length + ' ch · ' + groups.length + ' grup';
+    if(channels.length>0) setTimeout(()=>playChannel(channels[0]),300);
+    // Open sidebar briefly to show channels loaded
+    openSidebar();
+    setTimeout(()=>{ if(window.innerWidth<=768) closeSidebar(); },2000);
+  } catch(err){ hideLoading(); showToast('✗ '+err.message); }
+}
+
+/* ── BUILD GROUP TABS ───────────────────── */
+function buildGroupTabs(){
+  const s=new Set(['ALL']); channels.forEach(c=>s.add(c.group)); groups=[...s];
+  const ct=document.getElementById('groupTabs'); ct.innerHTML='';
+  groups.forEach(g=>{
+    const cnt=g==='ALL'?channels.length:channels.filter(c=>c.group===g).length;
+    const t=document.createElement('div');
+    t.className='grpTab'+(g===currentGroup?' active':'');
+    t.innerHTML=`${escH(g)}<span class="grp-n">${cnt}</span>`;
+    t.addEventListener('click',()=>{
+      currentGroup=g;
+      document.querySelectorAll('.grpTab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active'); renderChannelList();
+    });
+    ct.appendChild(t);
+  });
+}
+
+/* ── RENDER CHANNEL LIST ────────────────── */
+function renderChannelList(){
+  const q=searchQuery.toLowerCase();
+  const fl=channels.filter(c=>(currentGroup==='ALL'||c.group===currentGroup)&&(!q||c.name.toLowerCase().includes(q)));
+  const list=document.getElementById('channelList');
+  if(!fl.length){list.innerHTML='<div class="ch-empty"><span class="ch-empty-icon">🔍</span>Tidak ada saluran</div>';return;}
+  const fb=`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 30'><rect fill='%231c2235' width='44' height='30' rx='4'/><text x='50%25' y='55%25' text-anchor='middle' dy='.35em' fill='%23525d7a' font-size='9' font-family='sans-serif'>TV</text></svg>`;
+  list.innerHTML='';
+  fl.forEach((ch,i)=>{
+    const gi=channels.indexOf(ch);
+    const el=document.createElement('div');
+    el.className='chItem'+(currentChannel?.url===ch.url?' active':'');
+    el.dataset.idx=gi;
+    el.style.animationDelay=Math.min(i*11,500)+'ms';
+    el.innerHTML=`
+      <span class="ch-num">${String(i+1).padStart(2,'0')}</span>
+      <div class="ch-logo-box"><img class="ch-logo" src="${ch.logo||fb}" loading="lazy" onerror="this.src='${fb}'"></div>
+      <div class="ch-info"><div class="ch-name">${escH(ch.name)}</div><div class="ch-cat">${escH(ch.group)}</div></div>
+      ${multiMode?'<button class="ch-add" title="Tambah ke multi">＋</button>':''}
+    `;
+    el.addEventListener('click',e=>{
+      if(e.target.classList.contains('ch-add')){addToMulti(ch);return;}
+      if(multiMode) addToMulti(ch);
+      else { playChannel(ch); maybeCloseSidebar(); }
+    });
+    list.appendChild(el);
+  });
+}
+
+/* ── RESOLVE STREAM URL ─────────────────── */
+// Browser tidak bisa set Referer/Origin manual (forbidden headers).
+// Solusi: lewatkan URL stream melalui CORS proxy yang inject header di server-side.
+// Kita pakai allorigins.win dengan format yang support redirect follow.
+function resolveStreamUrl(ch) {
+  const url = ch.url;
+  const hasReferer = ch.headers && (ch.headers['Referer'] || ch.headers['Origin']);
+  
+  if (!hasReferer) return url; // tidak perlu proxy
+  
+  // Gunakan corsproxy.io — proxy ini follow redirect dan return konten asli
+  // Cocok untuk stream.php yang redirect ke .m3u8
+  const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+  return proxy;
+}
+
+/* ── PLAY CHANNEL ───────────────────────── */
+async function playChannel(ch){
+  if(!mainPlayer)return;
+  currentChannel=ch;
+  document.getElementById('placeholder').style.display='none';
+  showLoading('Memuat · '+ch.name);
+  document.querySelectorAll('.chItem').forEach(el=>el.classList.toggle('active',channels[el.dataset.idx]?.url===ch.url));
+  document.getElementById('livePill').classList.add('idle');
+  document.getElementById('npName').textContent=ch.name;
+  document.getElementById('npProg').textContent='';
+  document.getElementById('npLogo').src=ch.logo||'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  try{await mainPlayer.unload();}catch{}
+  // Clear old network filters
+  try{ mainPlayer.getNetworkingEngine().clearAllRequestFilters(); }catch{}
+  mainPlayer.configure(mkCfg(ch));
+  // Untuk stream tanpa Referer: inject header langsung via Shaka filter
+  // Untuk stream dengan Referer/Origin: pakai proxy karena browser larang set forbidden headers
+  const streamUrl = resolveStreamUrl(ch);
+  if(streamUrl === ch.url) {
+    // Tidak pakai proxy, inject header via Shaka
+    attachNetworkFilter(mainPlayer, ch);
+  }
+  try{
+    await mainPlayer.load(streamUrl);
+    hideLoading();
+    document.getElementById('livePill').classList.remove('idle');
+    showToast('▶ '+ch.name);
+    updateEPGBar(ch);
+  }catch(e){
+    console.error(e);hideLoading();
+    document.getElementById('livePill').classList.add('idle');
+    showToast('✗ Gagal: '+ch.name);
+  }
+}
+
+function mkCfg(ch){
+  const c={
+    streaming:{
+      ignoreTextStreamFailures:true,
+      rebufferingGoal:2,bufferingGoal:30,bufferBehind:60,
+      inaccurateManifestTolerance:0.3,stallEnabled:false
+    },
+    manifest:{dash:{ignoreMinBufferTime:true,autoCorrectDrift:true}}
+  };
+  if(ch.clearKey) c.drm={clearKeys:{[ch.clearKey.keyId]:ch.clearKey.key}};
+
+  // Inject headers dari #EXTVLCOPT ke Shaka network filter
+  const headers = ch.headers || {};
+  if(Object.keys(headers).length > 0){
+    c.streaming = c.streaming || {};
+    // Pasang via network request filter
+    ch._headersInjected = true;
+  }
+  return c;
+}
+
+/* ── NETWORK FILTER — inject Referer/Origin/User-Agent ── */
+function attachNetworkFilter(player, ch){
+  const headers = ch.headers || {};
+  if(!Object.keys(headers).length) return;
+  player.getNetworkingEngine().registerRequestFilter((type, request) => {
+    if(headers['Referer'])    request.headers['Referer']    = headers['Referer'];
+    if(headers['Origin'])     request.headers['Origin']     = headers['Origin'];
+    if(headers['User-Agent']) request.headers['User-Agent'] = headers['User-Agent'];
+  });
+}
+
+/* ── MULTI VIEW ─────────────────────────── */
+function toggleMultiMode(){
+  multiMode=!multiMode;
+  document.getElementById('multiBtn').classList.toggle('on',multiMode);
+  document.getElementById('sbMode').textContent=multiMode?'Multi':'Single';
+  if(!multiMode){clearMulti();document.getElementById('singlePlayer').style.display='';document.getElementById('multiGrid').style.display='none';document.getElementById('multiGrid').className='';showToast('Mode Single');}
+  else showToast('Multi aktif — klik saluran untuk tambah');
+  renderChannelList();
+}
+
+async function addToMulti(ch){
+  if(multiPlayers.length>=4){showToast('Maks 4 saluran');return;}
+  document.getElementById('singlePlayer').style.display='none';
+  const grid=document.getElementById('multiGrid'); grid.style.display='grid';
+  const cellId='mc-'+Date.now();
+  const cell=document.createElement('div'); cell.className='multiCell'; cell.id=cellId;
+  const vid=document.createElement('video');
+  vid.autoplay=true;vid.controls=true;vid.setAttribute('playsinline','');
+  vid.muted=(multiPlayers.length>0);
+  vid.style.cssText='width:100%;height:100%;background:#000;display:block';
+  const lbl=document.createElement('div'); lbl.className='cellLabel'; lbl.textContent=ch.name;
+  const cls=document.createElement('button'); cls.className='cellClose'; cls.textContent='✕';
+  cls.addEventListener('click',e=>{e.stopPropagation();removeMultiCell(cellId);});
+  cell.append(vid,lbl,cls);
+  cell.addEventListener('click',e=>{
+    if(e.target===cls)return;
+    multiPlayers.forEach(m=>{m.video.muted=true;});
+    vid.muted=false;
+    document.querySelectorAll('.multiCell').forEach(c=>c.classList.remove('focused'));
+    cell.classList.add('focused');
+  });
+  grid.appendChild(cell);
+  grid.className=`grid-${Math.min(multiPlayers.length+1,4)}`;
+  const pl=new shaka.Player();
+  await pl.attach(vid);
+  pl.configure(mkCfg(ch));
+  const multiUrl = resolveStreamUrl(ch);
+  if(multiUrl === ch.url) attachNetworkFilter(pl, ch);
+  pl.addEventListener('error',e=>{console.error('Multi err',e.detail);showToast('✗ '+ch.name);});
+  try{await pl.load(multiUrl);showToast('▶ '+ch.name);}
+  catch(e){console.error(e);showToast('✗ Gagal: '+ch.name);}
+  multiPlayers.push({player:pl,video:vid,cellId,channel:ch});
+  updateMultiGrid();
+}
+
+function removeMultiCell(cellId){
+  const i=multiPlayers.findIndex(m=>m.cellId===cellId);if(i===-1)return;
+  try{multiPlayers[i].player.destroy();}catch{}
+  document.getElementById(cellId)?.remove();multiPlayers.splice(i,1);updateMultiGrid();
+  if(!multiPlayers.length){document.getElementById('singlePlayer').style.display='';document.getElementById('multiGrid').style.display='none';}
+}
+function updateMultiGrid(){const n=multiPlayers.length;document.getElementById('multiGrid').className=n>0?`grid-${Math.min(n,4)}`:''}
+function clearMulti(){multiPlayers.forEach(m=>{try{m.player.destroy();}catch{}});multiPlayers=[];document.getElementById('multiGrid').innerHTML='';}
+
+/* ── EPG ────────────────────────────────── */
+function toggleEPG(){epgOpen=!epgOpen;document.getElementById('epgPanel').classList.toggle('open',epgOpen);}
+function updateEPGBar(ch){
+  if(!ch.tvgId)return;const p=epgData[ch.tvgId];if(!p?.length)return;
+  const now=Date.now()/1000;const c=p.find(x=>x.start<=now&&x.end>=now);
+  if(c) document.getElementById('npProg').textContent='▸ '+c.title;
+  if(epgOpen) showEPGForChannel(ch);
+}
+function showEPGForChannel(ch){
+  document.getElementById('epgChName').textContent=ch.name;
+  const list=document.getElementById('epgList'),nd=document.getElementById('epgNoData');
+  const p=ch.tvgId?epgData[ch.tvgId]:null; list.innerHTML='';
+  if(!p?.length){nd.style.display='';nd.textContent='Data EPG tidak tersedia';return;}
+  nd.style.display='none';const now=Date.now()/1000;
+  p.slice(0,20).forEach(x=>{
+    const isN=x.start<=now&&x.end>=now;
+    const it=document.createElement('div');
+    it.className='epgItem'+(isN?' now':'');
+    const t=new Date(x.start*1000).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    it.innerHTML=`<div class="epgTime">${t}${isN?'<span class="epgOnAir">ON AIR</span>':''}</div><div class="epgTitle">${escH(x.title)}</div>`;
+    list.appendChild(it);
+  });
+}
+
+/* ── UTILS ──────────────────────────────── */
+function showLoading(msg){document.getElementById('loadingOverlay').classList.remove('hidden');document.getElementById('loadingText').textContent=msg||'Memuat';}
+function hideLoading(){document.getElementById('loadingOverlay').classList.add('hidden');}
+let tt;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2800);}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function updateClock(){
+  const now=new Date();
+  document.getElementById('npClock').textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('sbDate').textContent=now.toLocaleDateString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+}
+
+/* ── EVENTS ─────────────────────────────── */
+document.getElementById('loadBtn').addEventListener('click',()=>{const u=document.getElementById('urlInput').value.trim();if(u)loadPlaylist(u);});
+document.getElementById('urlInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loadBtn').click();});
+document.getElementById('multiBtn').addEventListener('click',toggleMultiMode);
+document.getElementById('epgBtn').addEventListener('click',toggleEPG);
+document.getElementById('epgClose').addEventListener('click',()=>{epgOpen=false;document.getElementById('epgPanel').classList.remove('open');});
+document.getElementById('plChange').addEventListener('click', () => {
+  // Show URL input again
+  const row = document.getElementById('urlRow');
+  row.classList.remove('loaded');
+  document.getElementById('urlInput').focus();
+  document.getElementById('urlInput').select();
+});
+
+document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value;renderChannelList();});
+
+/* Close sidebar when clicking player area (not on mobile backdrop) */
+document.getElementById('playerZone').addEventListener('click',e=>{
+  if(sidebarOpen && window.innerWidth<=768 && !document.getElementById('sidebar').contains(e.target)){
+    closeSidebar();
+  }
+});
+
+/* Keyboard shortcut: [ = toggle sidebar, ] = toggle EPG */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='[') toggleSidebar();
+  if(e.key===']') toggleEPG();
+});
+
+/* ── STARTUP ────────────────────────────── */
+window.addEventListener('load', async()=>{
+  await initShaka();
+  updateClock(); setInterval(updateClock,1000);
+  const u=document.getElementById('urlInput').value.trim();
+  if(u) setTimeout(()=>loadPlaylist(u),400);
+});
+</script>
+</body>
+</html>
