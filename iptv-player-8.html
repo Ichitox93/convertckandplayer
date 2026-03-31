@@ -64,15 +64,18 @@ body{font-family:var(--f-b);background:var(--ink);color:var(--tx0);font-size:13p
 
 /* Toggle sidebar button */
 #sbToggle {
-  width:36px;height:36px;
+  width:36px;
+  height:36px;
   background:var(--ink3);
   border:1px solid var(--border);
-  border-radius:8px;
+  border-radius:10px;
   color:var(--tx1);
   cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   flex-shrink:0;
-  transition:all .2s;
+  transition: background 0.2s ease, transform 0.2s ease;
   font-size:16px;
 }
 #sbToggle:hover{border-color:var(--gold2);color:var(--gold);background:var(--gold-dim)}
