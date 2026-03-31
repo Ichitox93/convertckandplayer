@@ -969,20 +969,29 @@ function mkCfg(ch){
   const c={
     streaming:{
       ignoreTextStreamFailures:true,
-      rebufferingGoal:2,bufferingGoal:30,bufferBehind:60,
-      inaccurateManifestTolerance:0.3,stallEnabled:false
+      rebufferingGoal:2,
+      bufferingGoal:30,
+      bufferBehind:60,
+      inaccurateManifestTolerance:0.5,
+      stallEnabled:false,
+      manifestUpdateRetryInterval:5
     },
-    manifest:{dash:{ignoreMinBufferTime:true,autoCorrectDrift:true}}
+    manifest:{
+      dash:{
+        ignoreMinBufferTime:true,
+        autoCorrectDrift:true,
+        ignoreSuggestedPresentationDelay:true,
+        ignoreEmptyAdaptationSet:true,
+        ignoreMaxSegmentDuration:true,
+        clockSyncUri: '//time.akamai.com/?iso'
+      }
+    }
   };
-  if(ch.clearKey) c.drm={clearKeys:{[ch.clearKey.keyId]:ch.clearKey.key}};
 
-  // Inject headers dari #EXTVLCOPT ke Shaka network filter
-  const headers = ch.headers || {};
-  if(Object.keys(headers).length > 0){
-    c.streaming = c.streaming || {};
-    // Pasang via network request filter
-    ch._headersInjected = true;
+  if(ch.clearKey) {
+    c.drm={clearKeys:{[ch.clearKey.keyId]:ch.clearKey.key}};
   }
+
   return c;
 }
 
