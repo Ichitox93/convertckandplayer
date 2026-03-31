@@ -925,12 +925,9 @@ function resolveStreamUrl(ch) {
   const url = ch.url;
   const hasReferer = ch.headers && (ch.headers['Referer'] || ch.headers['Origin']);
   
-  if (!hasReferer) return url; // tidak perlu proxy
-  
-  // Gunakan corsproxy.io — proxy ini follow redirect dan return konten asli
-  // Cocok untuk stream.php yang redirect ke .m3u8
-  const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
-  return proxy;
+  if (!hasReferer) return url;
+
+  return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
 }
 
 /* ── PLAY CHANNEL ───────────────────────── */
