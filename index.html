@@ -3,39 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Tool Interface</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css" rel="stylesheet">
+    <title>Tools</title>
 </head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#tools">Tools</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="tools">
-            <h2>Available Tools</h2>
-            <div class="tool-card">
-                <i class="tool-icon">🔧</i>
-                <h3>Tool 1</h3>
-                <p>Brief description of Tool 1.</p>
-            </div>
-            <div class="tool-card">
-                <i class="tool-icon">🛠️</i>
-                <h3>Tool 2</h3>
-                <p>Brief description of Tool 2.</p>
-            </div>
-            <!-- Add more tools as needed -->
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Ichitox93. All rights reserved.</p>
-    </footer>
+<body class="bg-gray-900">
+    <div class="container mx-auto pt-10">
+        <h1 class="text-4xl font-bold text-center mb-2 text-white">🛠️ TOOLS</h1>
+        <p class="text-center text-gray-400 mb-10">Akses semua tools yang tersedia</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a href="base64.html" class="bg-blue-600 hover:bg-blue-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">📝 Base64 Converter</h2>
+                <p class="text-sm mt-2">Convert Hex to Base64</p>
+            </a>
+            <a href="hex.html" class="bg-purple-600 hover:bg-purple-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">🔤 Hex Converter</h2>
+                <p class="text-sm mt-2">Convert Base64 to Hex</p>
+            </a>
+            <a href="webp.html" class="bg-green-600 hover:bg-green-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">🖼️ Image Converter</h2>
+                <p class="text-sm mt-2">Convert WebP images</p>
+            </a>
+            <a href="player.html" class="bg-red-600 hover:bg-red-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">▶️ Web Player</h2>
+                <p class="text-sm mt-2">Play video & audio</p>
+            </a>
+            <a href="keys.html" class="bg-yellow-600 hover:bg-yellow-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">🔑 Keys Generator</h2>
+                <p class="text-sm mt-2">Generate encryption keys</p>
+            </a>
+            <a href="iptv-player.html" class="bg-indigo-600 hover:bg-indigo-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">📺 IPTV Player</h2>
+                <p class="text-sm mt-2">Stream IPTV content</p>
+            </a>
+            <a href="iptv-player-8.html" class="bg-pink-600 hover:bg-pink-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">📡 IPTV Player Pro</h2>
+                <p class="text-sm mt-2">Advanced IPTV streaming</p>
+            </a>
+            <a href="tailwind.html" class="bg-cyan-600 hover:bg-cyan-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">🌐 Website Template</h2>
+                <p class="text-sm mt-2">Tailwind CSS website</p>
+            </a>
+            <a href="velox-v7.html" class="bg-orange-600 hover:bg-orange-700 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 text-white">
+                <h2 class="font-semibold text-2xl">🚀 VELOX Streaming</h2>
+                <p class="text-sm mt-2">Next-gen streaming player</p>
+            </a>
+        </div>
+    </div>
 </body>
 </html>
