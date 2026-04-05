@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>StreamVerse - Streaming TV & Channel</title>
+    <!-- Tailwind CSS v3 + Font Awesome Icons + Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration (menambahkan sedikit tema) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'Segoe UI', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 1.5s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { textShadow: '0 0 2px rgba(255,255,255,0.2)' },
+                            '100%': { textShadow: '0 0 8px rgba(59,130,246,0.6)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* custom scrollbar for channel grid */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #1e1e2f;
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+        .player-placeholder {
+            background: radial-gradient(circle at 30% 10%, #0f172a, #020617);
+        }
+        /* transisi hover untuk card channel */
+        .channel-card {
+            transition: all 0.2s ease;
+        }
+        .channel-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.5);
+        }
+        body {
+            background: #0b0f1c;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-200">
+
+    <!-- MAIN CONTAINER -->
+    <div class="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+        
+        <!-- SIDEBAR / TOOLBAR AREA (kiri pada desktop, atas pada mobile) -->
+        <aside class="lg:w-80 w-full bg-black/40 backdrop-blur-xl border-b lg:border-b-0 lg:border-r border-white/10 shadow-2xl z-20">
+            <div class="flex flex-col h-full">
+                <!-- Brand & Toolbar Title -->
+                <div class="p-5 border-b border-white/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                            <i class="fas fa-tv text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent">Stream<span class="text-blue-400">Verse</span></h1>
+                            <p class="text-[11px] text-gray-400 -mt-1">Live & Channel TV</p>
+                        </div>
+                    </div>
+                    <div class="lg:hidden flex gap-2">
+                        <button id="mobileMenuBtn" class="text-gray-300 hover:text-white text-xl">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TOOLBAR: kumpulan ikon kontrol & info tambahan (desktop selalu tampil, mobile bisa di toggle) -->
+                <div id="toolbarPanel" class="flex flex-col space-y-5 p-5 border-b border-white/10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-gray-400"><i class="fas fa-sliders-h mr-1"></i> Toolbar</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300">v2.0</span>
+                    </div>
+                    
+                    <!-- 5 fitur toolbar interaktif -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <button id="btnPlayPause" class="toolbar-btn group flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 hover:bg-blue-600/30 transition-all duration-200">
+                            <i class="fas fa-play text-lg text-blue-400 group-hover:text-white"></i>
+                            <span class="text-[11px] font-medium">Play/Pause</span>
+                        </button>
+                        <button id="btnVolume" class="toolbar-btn group flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 hover:bg-blue-600/30 transition-all duration-200">
+                            <i class="fas fa-volume-up text-lg text-blue-400 group-hover:text-white"></i>
+                            <span class="text-[11px] font-medium">Volume</span>
+                        </button>
+                        <button id="btnFullscreen" class="toolbar-btn group flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 hover:bg-blue-600/30 transition-all duration-200">
+                            <i class="fas fa-expand text-lg text-blue-400 group-hover:text-white"></i>
+                            <span class="text-[11px] font-medium">Fullscreen</span>
+                        </button>
+                        <button id="btnQuality" class="toolbar-btn group flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 hover:bg-blue-600/30 transition-all duration-200">
+                            <i class="fas fa-hdmi text-lg text-blue-400 group-hover:text-white"></i>
+                            <span class="text-[11px] font-medium">HD/4K</span>
+                        </button>
+                        <button id="btnCast" class="toolbar-btn group flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 hover:bg-blue-600/30 transition-all duration-200">
+                            <i class="fas fa-chromecast text-lg text-blue-400 group-hover:text-white"></i>
+                            <span class="text-[11px] font-medium">Cast</span>
+                        </button>
+                        <button id="btnInfo" class="toolbar-btn group flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 hover:bg-blue-600/30 transition-all duration-200">
+                            <i class="fas fa-info-circle text-lg text-blue-400 group-hover:text-white"></i>
+                            <span class="text-[11px] font-medium">Info</span>
+                        </button>
+                    </div>
+
+                    <!-- short separator & status volume dummy -->
+                    <div class="flex items-center justify-between text-[11px] text-gray-400 mt-1">
+                        <span><i class="far fa-clock mr-1"></i> <span id="liveTime">--:--</span></span>
+                        <span><i class="fas fa-signal"></i> Stream: <span id="streamStatus" class="text-green-400">● Live</span></span>
+                    </div>
+                </div>
+
+                <!-- DAFTAR CHANNEL (GRID) dengan kategori -->
+                <div class="flex-1 overflow-y-auto custom-scroll p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-semibold tracking-wide"><i class="fas fa-list-ul mr-2 text-blue-400"></i>Semua Channel</h3>
+                        <span class="text-[11px] bg-white/10 px-2 py-0.5 rounded-full" id="channelCount">12 channel</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-1 gap-2.5" id="channelGrid">
+                        <!-- Channel list akan di generate via javascript (dinamis) -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT: VIDEO PLAYER + INFOBAR -->
+        <main class="flex-1 flex flex-col p-4 md:p-6 lg:p-5">
+            <!-- PLAYER CARD dengan efek glassmorphism -->
+            <div class="relative bg-black/30 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-300">
+                <!-- Video Player Area (Placeholder Streaming dengan embed simulasi) -->
+                <div class="relative aspect-video w-full bg-black overflow-hidden group" id="videoContainer">
+                    <!-- iframe dummy streaming (simulasi stream channel, bisa diganti embed youtube/twitch atau hls) -->
+                    <iframe id="streamFrame" class="absolute inset-0 w-full h-full" 
+                        src="https://www.youtube.com/embed/6v2L2UGZJAM?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0" 
+                        title="Streaming Player" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                    
+                    <!-- overlay mini untuk efek interaksi (opsional) -->
+                    <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+
+                <!-- INFOBAR: menampilkan informasi channel yang sedang diputar & metadata -->
+                <div class="p-4 md:p-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/40 backdrop-blur-sm">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div class="flex items-center gap-3">
+                            <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500/30 to-indigo-600/30 flex items-center justify-center border border-white/20">
+                                <i class="fas fa-broadcast-tower text-blue-300 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h2 id="currentChannelName" class="text-xl font-bold tracking-tight flex items-center gap-2">Entertainment Live <span class="text-[10px] bg-blue-500/40 px-2 py-0.5 rounded-full">NOW</span></h2>
+                                <div class="flex items-center gap-2 text-xs text-gray-300 mt-0.5">
+                                    <i class="fas fa-eye"></i> <span id="viewerCount">12.4k</span> menonton
+                                    <span class="w-1 h-1 rounded-full bg-gray-500"></span>
+                                    <i class="fas fa-tag"></i> <span id="channelCategory">Hiburan / Musik</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm bg-white/5 px-4 py-2 rounded-full">
+                        <i class="fas fa-info-circle text-blue-400"></i>
+                        <span class="text-gray-200 font-medium" id="infoBarText">Klik channel untuk streaming langsung</span>
+                        <i class="fas fa-angle-right text-gray-400 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRID PREVIEW: tampilan kecil channel populer (sebagai grid tambahan) -->
+            <div class="mt-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-md font-semibold flex items-center gap-2"><i class="fas fa-th-large text-blue-400"></i> Channel Pilihan (Grid)</h3>
+                    <button id="refreshInfoBtn" class="text-xs bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full transition"><i class="fas fa-sync-alt mr-1"></i> Refresh Info</button>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" id="extraGridPreview">
+                    <!-- preview dinamis dari channel -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DATA CHANNEL (simulasi 12 channel dengan berbagai kategori)
+        const channels = [
+            { id: 1, name: "CNN International", category: "Berita", streamUrl: "https://www.youtube.com/embed/6v2L2UGZJAM", viewers: "23.1k", icon: "fab fa-cnn", bgGradient: "from-red-800/40 to-red-900/40" },
+            { id: 2, name: "National Geographic", category: "Dokumenter", streamUrl: "https://www.youtube.com/embed/9TzvY9P5S1U", viewers: "8.7k", icon: "fas fa-globe-americas", bgGradient: "from-green-800/40 to-teal-800/40" },
+            { id: 3, name: "ESPN Sports", category: "Olahraga", streamUrl: "https://www.youtube.com/embed/9X-9PgHfzHk", viewers: "15.2k", icon: "fas fa-futbol", bgGradient: "from-orange-700/40 to-yellow-800/40" },
+            { id: 4, name: "Netflix Series", category: "Hiburan", streamUrl: "https://www.youtube.com/embed/V2S9XeHnNbI", viewers: "34.5k", icon: "fas fa-film", bgGradient: "from-purple-800/40 to-pink-800/40" },
+            { id: 5, name: "BBC Earth", category: "Alam", streamUrl: "https://www.youtube.com/embed/9TzvY9P5S1U", viewers: "6.3k", icon: "fas fa-tree", bgGradient: "from-emerald-800/40 to-lime-800/40" },
+            { id: 6, name: "Music Live", category: "Musik", streamUrl: "https://www.youtube.com/embed/4kqpshZ7jC8", viewers: "42.1k", icon: "fas fa-music", bgGradient: "from-rose-700/40 to-amber-800/40" },
+            { id: 7, name: "Tech & Gaming", category: "Teknologi", streamUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", viewers: "19.3k", icon: "fas fa-gamepad", bgGradient: "from-indigo-800/40 to-blue-800/40" },
+            { id: 8, name: "Travel XP", category: "Travel", streamUrl: "https://www.youtube.com/embed/2Q6_9A90cUk", viewers: "5.8k", icon: "fas fa-plane", bgGradient: "from-sky-700/40 to-cyan-800/40" },
+            { id: 9, name: "Cinema Box", category: "Film", streamUrl: "https://www.youtube.com/embed/0VqTwnAuHws", viewers: "27.4k", icon: "fas fa-clapperboard", bgGradient: "from-fuchsia-800/40 to-violet-800/40" },
+            { id: 10, name: "News 24/7", category: "Berita", streamUrl: "https://www.youtube.com/embed/6v2L2UGZJAM", viewers: "11.9k", icon: "fas fa-newspaper", bgGradient: "from-gray-700/40 to-slate-800/40" },
+            { id: 11, name: "Kids Fun", category: "Anak", streamUrl: "https://www.youtube.com/embed/kXYiU_JCYtU", viewers: "9.2k", icon: "fas fa-child", bgGradient: "from-yellow-700/40 to-orange-800/40" },
+            { id: 12, name: "Fashion & Life", category: "Gaya Hidup", streamUrl: "https://www.youtube.com/embed/TmR_6eOhGQE", viewers: "4.5k", icon: "fas fa-heart", bgGradient: "from-pink-800/40 to-rose-800/40" }
+        ];
+
+        // current active channel
+        let currentChannel = channels[0];
+        let isPlaying = true;     // status simulasi play/pause
+        let volumeMuted = false;
+        let streamFrame = document.getElementById('streamFrame');
+        
+        // DOM elements
+        const channelGrid = document.getElementById('channelGrid');
+        const extraGridPreview = document.getElementById('extraGridPreview');
+        const currentChannelNameSpan = document.getElementById('currentChannelName');
+        const viewerCountSpan = document.getElementById('viewerCount');
+        const channelCategorySpan = document.getElementById('channelCategory');
+        const infoBarTextSpan = document.getElementById('infoBarText');
+        const streamStatusSpan = document.getElementById('streamStatus');
+        const liveTimeSpan = document.getElementById('liveTime');
+        const channelCountSpan = document.getElementById('channelCount');
+
+        // Helper update infobar & info channel
+        function updateInfoBar(channel) {
+            currentChannelNameSpan.innerHTML = `${channel.name} <span class="text-[10px] bg-blue-500/40 px-2 py-0.5 rounded-full">NOW</span>`;
+            viewerCountSpan.innerText = channel.viewers;
+            channelCategorySpan.innerText = channel.category;
+            infoBarTextSpan.innerText = `Sedang menonton ${channel.name} | Kategori: ${channel.category}`;
+            // Ubah judul halaman sedikit
+            document.title = `${channel.name} · StreamVerse`;
+        }
+
+        // Fungsi ganti channel (update iframe src)
+        function switchChannel(channel) {
+            currentChannel = channel;
+            // update iframe source dan pastikan autoplay
+            if (streamFrame) {
+                // kita maintain parameter autoplay dan mute agar pengalaman mulus
+                let newUrl = channel.streamUrl;
+                if (newUrl.includes('youtube.com/embed')) {
+                    newUrl = newUrl + (newUrl.includes('?') ? '&' : '?') + 'autoplay=1&mute=0';
+                } else {
+                    // fallback
+                    newUrl = newUrl;
+                }
+                streamFrame.src = newUrl;
+            }
+            updateInfoBar(channel);
+            // update juga status stream jadi live
+            streamStatusSpan.innerHTML = '● Live';
+            streamStatusSpan.className = "text-green-400";
+            // tambah efek notifikasi sederhana
+            showToastNotification(`Memutar ${channel.name}`);
+        }
+
+        // Toast sederhana
+        function showToastNotification(msg) {
+            let toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur-md border border-blue-500/40 text-white px-5 py-2 rounded-full text-sm z-50 font-medium shadow-xl transition-all duration-300';
+            toast.innerHTML = `<i class="fas fa-play-circle mr-2 text-blue-400"></i>${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+// Render semua channel di sidebar (grid 2 kolom pada mobile, 1 kolom di desktop)
+        function renderChannelList() {
+            channelGrid.innerHTML = '';
+            channels.forEach(ch => {
+                const card = document.createElement('div');
+                card.className = `channel-card flex items-center gap-3 p-2 rounded-xl cursor-pointer transition-all bg-white/5 hover:bg-blue-600/20 border border-white/5 hover:border-blue-400/50`;
+                card.setAttribute('data-id', ch.id);
+                card.innerHTML = `
+                    <div class="h-10 w-10 rounded-lg bg-gradient-to-br ${ch.bgGradient} flex items-center justify-center text-xl">
+                        <i class="${ch.icon} text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-sm truncate">${ch.name}</div>
+                        <div class="flex text-[10px] text-gray-400 gap-2"><span>${ch.category}</span><span><i class="far fa-eye"></i> ${ch.viewers}</span></div>
+                    </div>
+                    <div class="text-blue-400 text-xs opacity-0 group-hover:opacity-100 transition"><i class="fas fa-play-circle"></i></div>
+                `;
+                card.addEventListener('click', (e) => {
+                    switchChannel(ch);
+                    // highlight aktif sedikit
+                    document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('bg-blue-600/30', 'border-blue-500'));
+                    card.classList.add('bg-blue-600/30', 'border-blue-500');
+                });
+                if (ch.id === currentChannel.id) card.classList.add('bg-blue-600/30', 'border-blue-500');
+                channelGrid.appendChild(card);
+            });
+            channelCountSpan.innerText = `${channels.length} channel`;
+        }
+
+        // Render extra grid preview (tampilan lain)
+        function renderExtraGrid() {
+            extraGridPreview.innerHTML = '';
+            channels.slice(0, 10).forEach(ch => {
+                const card = document.createElement('div');
+                card.className = 'bg-white/5 hover:bg-white/10 rounded-xl p-2 text-center cursor-pointer transition-all backdrop-blur-sm border border-white/5';
+                card.innerHTML = `
+                    <div class="w-full h-16 rounded-lg bg-gradient-to-br ${ch.bgGradient} flex items-center justify-center mb-2 text-2xl">
+                        <i class="${ch.icon}"></i>
+                    </div>
+                    <div class="text-xs font-medium truncate">${ch.name}</div>
+                    <div class="text-[10px] text-gray-400">${ch.viewers} viewers</div>
+                `;
+                card.addEventListener('click', () => switchChannel(ch));
+                extraGridPreview.appendChild(card);
+            });
+        }
+
+        // Toolbar interaksi simulasi
+        // Play/Pause: mengubah properti iframe (simulasi)
+        const btnPlayPause = document.getElementById('btnPlayPause');
+        const btnVolume = document.getElementById('btnVolume');
+        const btnFullscreen = document.getElementById('btnFullscreen');
+        const btnQuality = document.getElementById('btnQuality');
+        const btnCast = document.getElementById('btnCast');
+        const btnInfo = document.getElementById('btnInfo');
+        const refreshBtn = document.getElementById('refreshInfoBtn');
+
+        btnPlayPause.addEventListener('click', () => {
+            // simulasi: mengganti stream status di infobar
+            if (isPlaying) {
+                // untuk pause pada iframe youtube kita lakukan dengan cara menyembunyikan? tidak bisa langsung, namun kita bisa mengganti src sementara
+                // pendekatan: pause dengan memanipulasi contentWindow (tidak aman lintas origin). Maka kita tampilkan efek visual info saja.
+                streamStatusSpan.innerHTML = '● Paused';
+                streamStatusSpan.className = "text-yellow-400";
+                showToastNotification("Stream dijeda (simulasi)");
+                isPlaying = false;
+                btnPlayPause.querySelector('i').className = "fas fa-play text-lg text-blue-400 group-hover:text-white";
+            } else {
+                streamStatusSpan.innerHTML = '● Live';
+                streamStatusSpan.className = "text-green-400";
+                showToastNotification("Stream dilanjutkan");
+                isPlaying = true;
+                btnPlayPause.querySelector('i').className = "fas fa-pause text-lg text-blue-400 group-hover:text-white";
+            }
+        });
+        // set awal icon pause
+        btnPlayPause.querySelector('i').className = "fas fa-pause text-lg text-blue-400 group-hover:text-white";
+
+        btnVolume.addEventListener('click', () => {
+            volumeMuted = !volumeMuted;
+            showToastNotification(volumeMuted ? "Volume dimatikan" : "Volume normal (simulasi)");
+            btnVolume.querySelector('i').className = volumeMuted ? "fas fa-volume-mute text-lg" : "fas fa-volume-up text-lg";
+        });
+
+        btnFullscreen.addEventListener('click', () => {
+            const container = document.getElementById('videoContainer');
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+                showToastNotification("Mode layar penuh");
+            } else {
+                showToastNotification("Fullscreen tidak didukung");
+            }
+        });
+
+        btnQuality.addEventListener('click', () => {
+            showToastNotification("Kualitas streaming: HD 1080p (simulasi)");
+        });
+
+        btnCast.addEventListener('click', () => {
+            showToastNotification("Pencarian perangkat Chromecast... (simulasi)");
+        });
+
+        btnInfo.addEventListener('click', () => {
+            alert(`Info Channel:\nNama: ${currentChannel.name}\nKategori: ${currentChannel.category}\nPenonton: ${currentChannel.viewers}\nStream URL: ${currentChannel.streamUrl.substring(0, 50)}...`);
+        });
+
+        refreshBtn.addEventListener('click', () => {
+            showToastNotification("Memperbarui informasi channel...");
+            // random viewer count simulasi
+            const randomView = Math.floor(Math.random() * 5000) + 4000;
+            currentChannel.viewers = randomView.toLocaleString() + "k";
+            viewerCountSpan.innerText = currentChannel.viewers;
+            // update juga di channel list jika diperlukan
+            renderChannelList();
+            renderExtraGrid();
+            // re-highlight channel aktif
+            document.querySelectorAll('.channel-card').forEach(card => {
+                if (card.innerText.includes(currentChannel.name)) card.classList.add('bg-blue-600/30', 'border-blue-500');
+            });
+        });
+
+        // Real time clock di info bar
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            liveTimeSpan.innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Mobile toolbar toggle sederhana
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const toolbarPanel = document.getElementById('toolbarPanel');
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', () => {
+                toolbarPanel.classList.toggle('hidden');
+            });
+        }
+
+        // inisialisasi awal
+        renderChannelList();
+        renderExtraGrid();
+        updateInfoBar(currentChannel);
+        // set default iframe 
+        streamFrame.src = currentChannel.streamUrl + "?autoplay=1&mute=0";
+        
+        // Menampilkan channel pertama yang aktif secara highlight di sidebar
+        setTimeout(() => {
+            const firstCard = document.querySelector('.channel-card');
+            if(firstCard) firstCard.classList.add('bg-blue-600/30', 'border-blue-500');
+        }, 100);
+    </script>
+</body>
+</html>
