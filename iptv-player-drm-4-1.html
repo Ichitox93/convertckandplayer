@@ -234,12 +234,19 @@ body::before{
 /* ═══════════════════════════════════
    PLAYER ZONE
 ═══════════════════════════════════ */
-#playerZone{
-  flex:1;position:relative;
-  background:#000;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-  min-height:0;
+#playerZone {
+   width: 100%;
+   aspect-ratio: 16 / 9; /* Memaksa bentuk persegi panjang ala TV */
+   max-height: 40vh; /* Mencegah player terlalu tinggi di layar tablet/lipat */
+   flex-shrink: 0; /* Menjaga agar ukurannya tidak tergencet elemen bawah */
+   position: relative;
+   background: #000;
+   overflow: hidden;
+   display: flex;
+   align-items: center;
+   justify-content: center;
 }
+
 #playerZone::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--gdim),var(--g2),var(--gdim),transparent);
