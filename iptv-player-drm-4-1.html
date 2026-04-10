@@ -251,15 +251,57 @@ body::before{
 #video{width:100%;height:100%;background:#000;display:block;object-fit:contain}
 
 /* Placeholder */
-#placeholder{
-  position:absolute;inset:0;z-index:1;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  background:radial-gradient(ellipse at center,#071009 0%,#030505 70%);
+/* Placeholder - Background Radial yang Lebih Terang */
+#placeholder {
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;
+  
+  /* Gradasi radial sedikit lebih terang di tengah */
+  background: radial-gradient(circle at center, #0e2018 0%, #030505 80%);
+  overflow: hidden; /* Penting agar efek scanline tidak bocor */
 }
-.ph-hex{
-  position:relative;width:120px;height:120px;
-  display:flex;align-items:center;justify-content:center;
+
+/* Menambahkan efek scanline horizontal yang lebih rapat khusus di placeholder */
+#placeholder::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,255,136,0.03) 0px, rgba(0,255,136,0.03) 1px, transparent 1px, transparent 2px);
+  pointer-events: none;
 }
+
+/* Wadah Hex - Sedikit Mengecil & Ditambah Border Tipis */
+.ph-hex {
+  position: relative; width: 100px; height: 100px; /* Ukuran simetris */
+  display: flex; align-items: center; justify-content: center;
+  
+  /* Menambahkan bingkai segi enam (jika kamu pakai SVG/IMG di dalamnya) */
+  border: 1px solid var(--gline);
+  background: var(--gsoft); /* Latar belakang hijau super transparan */
+  border-radius: 8px; /* Ujung sedikit tumpul agar elegan */
+  
+  /* Efek bayangan glow halus di luar kotak */
+  box-shadow: 0 0 15px var(--gdim);
+  
+  /* Animasi glitch kecil saat dimuat */
+  animation: phGlitch In 2s infinite linear;
+}
+
+/* Tambahan Text di Bawah Ikon (opsional) */
+#placeholder::after {
+  content: '[ WAITING FOR FEED... ]';
+  color: var(--t2); /* Warna teks redup */
+  font-family: var(--fm); /* Font mono */
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+/* Animasi Glitch Kecil untuk Wadah Hex */
+@keyframes phGlitchIn {
+  0% { transform: skew(0deg); opacity: 1; }
+  10% { transform: skew(5deg); opacity: 0.8; }
+  12% { transform: skew(-5deg); opacity: 1; }
+  100% { transform: skew(0deg); }
+}
+
 /* Hexagon rings */
 .ph-h{
   position:absolute;
