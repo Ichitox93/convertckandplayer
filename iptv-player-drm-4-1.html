@@ -380,12 +380,23 @@ body::before{
 #loadingText{font-family:var(--fm);font-size:11px;color:var(--g2);letter-spacing:2px}
 
 /* Multi grid */
-#multiGrid{display:none;position:absolute;inset:0;gap:2px;background:#000}
-.grid-1{display:grid;grid-template-columns:1fr}
-.grid-2{display:grid;grid-template-columns:1fr 1fr}
-.grid-3{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-.grid-3 .multiCell:first-child{grid-column:1/-1}
-.grid-4{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+#multiGrid {
+  display: none; /* Default disembunyikan */
+  position: absolute; inset: 0; gap: 2px; background: #000;
+}
+
+/* Tambahkan ini agar bisa membatalkan display: none */
+#multiGrid.active {
+  display: grid;
+}
+
+/* Hapus "display: grid" dari sini, cukup atur kolomnya saja */
+.grid-1 { grid-template-columns: 1fr; }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.grid-3 .multiCell:first-child { grid-column: 1 / -1; }
+.grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
 .multiCell{position:relative;background:var(--s1);overflow:hidden}
 .multiCell video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 .cellLabel{
