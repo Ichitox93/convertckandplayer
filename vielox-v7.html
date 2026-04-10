@@ -1805,38 +1805,90 @@ function updateUrlTrigger(name, count, groups_count){
 
 /* Close on Escape */
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape' && urlDropdownOpen) closeUrlDropdown();
+  const key = e.key || e.keyCode;
+  if ((key === 'Escape' || key === 'Esc' || key === 27) && urlDropdownOpen) {
+    closeUrlDropdown();
+  }
 });
 
-async function loadPlaylistSilent(url){
-  try{
-    let text='';
-    try{const r=await fetch(url,{mode:'cors'});if(r.ok)text=await r.text();else throw 0;}
-    catch{try{const r2=await fetch('https://corsproxy.io/?'+encodeURIComponent(url));if(r2.ok)text=await r2.text();}catch{}}
-    if(!text)return;
-    if(!text.includes('#EXTM3U')&&!text.includes('#EXTINF'))return;
-    channels=parseM3U(text);
+async function loadPlaylistSilent(url) {
+  try {
+    // Validasi URL
+    try {
+      new URL(url);
+    } catch {
+      console.error('Invalid playlist URL');
+      return;
+    }
 
-    // Extract EPG URLs
-    const em=text.match(/url-tvg="([^"]*)"/);
-    if(em)epgUrls=em[1].split(',').map(u=>u.trim()).filter(Boolean);
+    let text = '';
 
-    buildGroupTabs();renderChannelList();
-    ['sfCount','sbCount','r2Count','ibChCount'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=channels.length;});
-    ['sfGroups','sbGroups','ibGrCount','cgFootGroups'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=groups.length;});
-    const cgCount2=document.getElementById('cgCount');if(cgCount2)cgCount2.textContent=channels.length;
-    let pn=url.split('/').pop().split('?')[0]||url;
-    if(pn.length>40)pn=pn.substring(0,40)+'…';
-    if(pn===url){try{pn=new URL(url).hostname;}catch{}}
+    // Fetch utama
+    try {
+      const r = await fetch(url, { mode: 'cors' });
+      if (r.ok) text = await r.text();
+      else throw new Error('Primary fetch failed');
+    } catch {
+      // Fallback CORS proxy
+      try {
+        const r2 = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+        if (r2.ok) text = await r2.text();
+      } catch (err) {
+        console.error('Proxy fetch failed:', err);
+      }
+    }
+
+    if (!text) return;
+
+    // Validasi format M3U
+    if (!text.includes('#EXTM3U') && !text.includes('#EXTINF')) return;
+
+    channels = parseM3U(text);
+
+    // Extract multiple EPG URLs
+    const matches = [...text.matchAll(/url-tvg="([^"]*)"/g)];
+    epgUrls = matches
+      .flatMap(m => m[1].split(','))
+      .map(u => u.trim())
+      .filter(Boolean);
+
+    buildGroupTabs();
+    renderChannelList();
+
+    // Update counters
+    ['sfCount', 'sbCount', 'r2Count', 'ibChCount'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = channels.length;
+    });
+
+    ['sfGroups', 'sbGroups', 'ibGrCount', 'cgFootGroups'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = groups.length;
+    });
+
+    const cgCount2 = document.getElementById('cgCount');
+    if (cgCount2) cgCount2.textContent = channels.length;
+
+    // Nama playlist
+    let pn = url.split('/').pop().split('?')[0] || url;
+    if (pn.length > 40) pn = pn.substring(0, 40) + '…';
+    if (pn === url) {
+      try { pn = new URL(url).hostname; } catch {}
+    }
+
     updateUrlTrigger(pn, channels.length, groups.length);
 
     // Play first channel
-    if(channels.length>0)setTimeout(()=>playChannel(channels[0]),300);
-    // Load EPG in background after splash
-    if(epgUrls.length) setTimeout(()=>loadEPG(epgUrls), 1000);
-  }catch(e){console.error('Playlist load error:',e);}
+    if (channels.length > 0) {
+      setTimeout(() => playChannel(channels[0]), 300);
+    }
+
+    // Load EPG in background
+    if (epgUrls.length) {
+      setTimeout(() => loadEPG(epgUrls), 1000);
+    }
+
+  } catch (e) {
+    console.error('Playlist load error:', e);
+  }
 }
-</script>
--e 
-</body>
-</html>
