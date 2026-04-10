@@ -42,16 +42,28 @@
 }
 
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
+/* ===== CSS RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-body{
-  font-family:var(--fb);
-  background:var(--bg);
-  color:var(--t1);
-  font-size:13px;
-  display:flex;
-  flex-direction:column;
+/* ===== ROOT LAYOUT ===== */
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--fb, 'Poppins', sans-serif); /* Fallback font */
+  background-color: var(--bg, #0f172a);          /* Warna default jika variabel tidak ada */
+  color: var(--t1, #e5e7eb);                     /* Warna teks default */
+  font-size: 13px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;                             /* Lebih fleksibel dibanding height:100% */
+  overflow-x: hidden;                            /* Hindari scroll horizontal */
 }
 
 /* Matrix scan line overlay */
