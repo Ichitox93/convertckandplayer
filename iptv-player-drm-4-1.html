@@ -1610,27 +1610,52 @@ body::before{
     </div>
 
     <!-- ── MODE 1: FLOATING DRAWER ── -->
-    <div id="sbEdge"></div>
-    <div id="sbBackdrop"></div>
-    <div id="drawer">
-      <div class="dr-hd">
-        <div class="dr-search">
-          <span class="dr-si">⌕</span>
-          <input id="searchInput" type="text" placeholder="Cari saluran...">
-        </div>
-      </div>
-      <div id="groupTabs"></div>
-      <div id="channelList">
-        <div class="ch-empty">
-          <span class="ch-empty-icon">📡</span>
-          Masukkan URL lalu klik LOAD
-        </div>
-      </div>
-      <div class="dr-foot">
-        <div class="df-s"><div class="df-dot"></div><b id="sfCount">0</b> saluran</div>
-        <div class="df-s"><b id="sfGroups">0</b> grup</div>
-      </div>
+    <div id="sbEdge" class="sb-edge"></div>
+<div id="sbBackdrop" class="sb-backdrop" aria-hidden="true"></div>
+
+<aside id="drawer" class="drawer" aria-label="Daftar Saluran">
+  
+  <!-- Header / Search -->
+  <header class="dr-hd">
+    <div class="dr-search">
+      <span class="dr-si" aria-hidden="true">⌕</span>
+      <input 
+        id="searchInput" 
+        type="text" 
+        placeholder="Cari saluran..." 
+        aria-label="Cari saluran"
+        autocomplete="off"
+      >
     </div>
+  </header>
+
+  <!-- Group Tabs -->
+  <nav id="groupTabs" class="group-tabs" aria-label="Daftar Grup"></nav>
+
+  <!-- Channel List -->
+  <main id="channelList" class="channel-list" aria-live="polite">
+    <div class="ch-empty">
+      <span class="ch-empty-icon" aria-hidden="true">📡</span>
+      <p>Masukkan URL lalu klik <strong>LOAD</strong></p>
+    </div>
+  </main>
+
+  <!-- Footer / Statistics -->
+  <footer class="dr-foot">
+    <div class="df-s">
+      <span class="df-dot" aria-hidden="true"></span>
+      <span class="df-label">
+        <b id="sfCount">0</b> saluran
+      </span>
+    </div>
+    <div class="df-s">
+      <span class="df-label">
+        <b id="sfGroups">0</b> grup
+      </span>
+    </div>
+  </footer>
+
+</aside>
 
     <!-- ── MODE 3: ICON BAR ── -->
 <ul id="iconBar" class="icon-bar"></ul>
