@@ -652,13 +652,56 @@ body::before{
 
 /* Drawer footer */
 .dr-foot{
-  padding:8px 12px;border-top:1px solid var(--gline);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;background:rgba(3,5,5,0.5);
+  padding:8px 12px;
+  border-top:1px solid var(--gline);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  background:rgba(3,5,5,0.5);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
-.df-s{font-family:var(--fm);font-size:10px;color:var(--t2);display:flex;align-items:center;gap:6px}
-.df-s b{color:var(--g);font-weight:400}
-.df-dot{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 7px var(--g);animation:blink 2s infinite}
+
+.df-s{
+  font-family:var(--fm);
+  font-size:11px;
+  color:var(--t2);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  letter-spacing:0.3px;
+}
+
+.df-s b{
+  color:var(--g);
+  font-weight:500;
+}
+
+.df-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--g);
+  box-shadow:0 0 7px var(--g);
+  animation:blink 2s infinite;
+}
+
+.df-dot.offline{
+  background:#9e9e9e;
+  box-shadow:none;
+  animation:none;
+}
+
+.df-dot.error{
+  background:#e53935;
+  box-shadow:0 0 7px #e53935;
+}
+
+@keyframes blink{
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
 
 /* ── MODE 2: BOTTOM BAR ── */
 #bottomBar{
