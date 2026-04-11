@@ -898,19 +898,58 @@ body::before{
 /* ═══════════════════════════════════
    STATUS BAR
 ═══════════════════════════════════ */
-#statusBar{
-  height:24px;background:var(--bg);border-top:1px solid var(--gline);
-  display:flex;align-items:center;padding:0 14px;flex-shrink:0;
+/* ===== STATUS BAR ===== */
+#statusBar {
+  height: 24px;
+  background: var(--bg);
+  border-top: 1px solid var(--gline);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
-.sb-s{
-  display:flex;align-items:center;gap:5px;
-  font-family:var(--fm);font-size:10px;color:var(--t2);
-  padding:0 12px;border-right:1px solid var(--gline);
+
+/* ===== ITEM STATUS ===== */
+.sb-s {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fm, sans-serif);
+  font-size: 10px;
+  color: var(--t2);
+  padding: 0 12px;
+  border-right: 1px solid var(--gline);
+  white-space: nowrap;
 }
-.sb-s:first-child{padding-left:0}
-.sb-s:last-child{border-right:none;margin-left:auto;padding-right:0}
-.sb-s b{color:var(--t1);font-weight:400}
-.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 5px var(--g)}
+
+/* Item pertama tanpa padding kiri */
+.sb-s:first-child {
+  padding-left: 0;
+}
+
+/* Item terakhir rata kanan */
+.sb-s:last-child {
+  margin-left: auto;
+  padding-right: 0;
+  border-right: none;
+}
+
+/* Angka atau informasi utama */
+.sb-s b {
+  color: var(--t1);
+  font-weight: 500;
+}
+
+/* Indikator status (dot) */
+.sb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--g);
+  box-shadow: 0 0 6px var(--g);
+  flex-shrink: 0;
+}
 
 /* ═══════════════════════════════════
    SHAKA OVERRIDES
