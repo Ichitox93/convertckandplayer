@@ -259,7 +259,76 @@ body::before{
 /* ═══════════════════════════════════
    BODY
 ═══════════════════════════════════ */
-#body{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+#body {
+    /* === Fondasi Utama === */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    
+    /* === UPGRADE: Visual Background === */
+    background: var(--bg);                /* Warna latar konsisten (#030505) */
+    
+    /* === UPGRADE: Isolasi Z-Index === */
+    isolation: isolate;                   /* Mencegah konflik z-index antar komponen */
+    
+    /* === UPGRADE: Optimasi Render === */
+    contain: layout style paint;          /* Percepat rendering saat sidebar dibuka/tutup */
+    
+    /* === UPGRADE: Transisi Halus === */
+    transition: background 0.2s ease;
+}
+
+/* === UPGRADE: Efek Glow pada Tepi #body === */
+#body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    box-shadow: 
+        inset 0 0 60px rgba(0, 0, 0, 0.8),
+        inset 0 2px 4px var(--gdim);
+    opacity: 0.6;
+}
+
+/* === UPGRADE: Container Queries untuk Responsive === */
+#body {
+    container-type: inline-size;
+    container-name: bodyContainer;
+}
+
+/* === UPGRADE: Mode Fullscreen === */
+#body:has(#playerZone:fullscreen) {
+    background: #000;
+}
+
+#body:has(#playerZone:fullscreen)::before {
+    opacity: 0;
+}
+
+/* === UPGRADE: Mode PiP (Mini Player) - Jika Diimplementasikan === */
+#body.pip-active #playerZone {
+    box-shadow: 0 8px 32px rgba(0, 255, 136, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* === UPGRADE: Responsive Touch untuk Mobile === */
+@media (max-width: 768px) {
+    #body {
+        touch-action: pan-y;              /* Optimasi gesture scroll */
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* === UPGRADE: Safe Area untuk iPhone Notch === */
+@supports (padding: env(safe-area-inset-bottom)) {
+    #body {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
 
 /* ═══════════════════════════════════
    PLAYER ZONE
