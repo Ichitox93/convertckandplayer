@@ -107,16 +107,46 @@ body::before{
 
 /* Hamburger / sidebar toggle for mobile */
 #mobileMenuBtn{
-  display:none;
-  width:36px;height:36px;
-  background:var(--s2);border:1px solid var(--gline);
-  border-radius:5px;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;transition:all .15s;
-  color:var(--t1);font-size:18px;
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: var(--s2);
+  border: 1px solid var(--gline);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .1s ease;
+  color: var(--t1);
+  font-size: 18px;
 }
-#mobileMenuBtn:hover,#mobileMenuBtn:active{border-color:var(--g);color:var(--g);background:var(--gsoft)}
-@media(max-width:768px){
-  #mobileMenuBtn{display:flex}
+
+#mobileMenuBtn:hover{
+  border-color: var(--g);
+  color: var(--g);
+  background: var(--gsoft);
+}
+
+#mobileMenuBtn:active{
+  transform: scale(0.95);
+}
+
+#mobileMenuBtn:focus-visible{
+  outline: 2px solid var(--g);
+  outline-offset: 2px;
+}
+
+#mobileMenuBtn.active{
+  background: var(--gsoft);
+  border-color: var(--g);
+  color: var(--g);
+}
+
+@media (max-width: 768px){
+  #mobileMenuBtn{
+    display: flex;
+  }
 }
 
 /* Brand */
