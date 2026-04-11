@@ -1544,23 +1544,25 @@ body::before{
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div id="topbar">
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TOPBAR                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<header id="topbar">
   <div class="brand">
-    <div class="brand-ico">📺</div>
+    <div class="brand-ico" aria-hidden="true">📺</div>
     <div class="brand-txt">
       <div class="brand-name">VELOX</div>
       <div class="brand-sub">LIVE·TV</div>
     </div>
   </div>
 
-  <div class="vsep"></div>
+  <div class="vsep" aria-hidden="true"></div>
 
   <div id="urlRow">
     <span class="url-lbl">M3U</span>
-    <input id="urlInput" type="text"
-      placeholder="https://... playlist.m3u8 atau stream langsung"
-      value="https://da.gd/trmback1">
+    <input id="urlInput" type="text" 
+           placeholder="https://... playlist.m3u8 atau stream langsung"
+           value="https://da.gd/trmback1" aria-label="URL Playlist M3U">
     <button id="loadBtn">LOAD</button>
     <div id="playlistInfo">
       <span id="plName">—</span>
@@ -1569,57 +1571,65 @@ body::before{
     </div>
   </div>
 
-  <!-- Sidebar mode switcher -->
-  <div id="sbModeSwitcher" title="Ganti tampilan sidebar">
-    <!-- Drawer -->
-    <button class="sm-btn active" id="smDrawer" title="Floating Drawer">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="1" y="1" width="5" height="12" rx="1"/><rect x="7" y="1" width="6" height="12" rx="1"/>
+  <!-- Sidebar Mode Switcher -->
+  <nav id="sbModeSwitcher" aria-label="Mode Tampilan Sidebar">
+    <button class="sm-btn active" id="smDrawer" title="Floating Drawer" aria-pressed="true">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="1" y="1" width="5" height="12" rx="1"/>
+        <rect x="7" y="1" width="6" height="12" rx="1"/>
       </svg>
     </button>
-    <!-- Bottom -->
     <button class="sm-btn" id="smBottom" title="Bottom Bar">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="1" y="1" width="12" height="8" rx="1"/><rect x="1" y="10" width="12" height="3" rx="1"/>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="1" y="1" width="12" height="8" rx="1"/>
+        <rect x="1" y="10" width="12" height="3" rx="1"/>
       </svg>
     </button>
-    <!-- Icon -->
     <button class="sm-btn" id="smIcon" title="Icon Bar">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="1" y="1" width="3" height="3" rx=".5"/><rect x="1" y="5.5" width="3" height="3" rx=".5"/><rect x="1" y="10" width="3" height="3" rx=".5"/>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="1" y="1" width="3" height="3" rx=".5"/>
+        <rect x="1" y="5.5" width="3" height="3" rx=".5"/>
+        <rect x="1" y="10" width="3" height="3" rx=".5"/>
         <rect x="5" y="1" width="8" height="12" rx="1"/>
       </svg>
     </button>
-    <!-- Grid -->
     <button class="sm-btn" id="smGrid" title="Thumbnail Grid">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/>
-        <rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="1" y="1" width="5.5" height="5.5" rx="1"/>
+        <rect x="7.5" y="1" width="5.5" height="5.5" rx="1"/>
+        <rect x="1" y="7.5" width="5.5" height="5.5" rx="1"/>
+        <rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1"/>
       </svg>
     </button>
-  </div>
+  </nav>
 
-  <div class="vsep"></div>
+  <div class="vsep" aria-hidden="true"></div>
 
   <div class="tb-row">
-    <!-- Mobile sidebar toggle (visible only on mobile) -->
-    <button id="mobileMenuBtn" onclick="toggleSidebar()" title="Buka Saluran">☰</button>
+    <button id="mobileMenuBtn" onclick="toggleSidebar()" title="Buka Saluran" aria-label="Menu Saluran">☰</button>
+    
     <button class="tb-btn" id="multiBtn">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/>
-        <rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="1" y="1" width="6" height="6" rx="1"/>
+        <rect x="9" y="1" width="6" height="6" rx="1"/>
+        <rect x="1" y="9" width="6" height="6" rx="1"/>
+        <rect x="9" y="9" width="6" height="6" rx="1"/>
       </svg>
       <span>MULTI</span>
     </button>
+    
     <button class="tb-btn" id="epgBtn">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <rect x="1.5" y="1.5" width="13" height="13" rx="2"/>
-        <line x1="4" y1="5.5" x2="12" y2="5.5"/><line x1="4" y1="8" x2="10" y2="8"/><line x1="4" y1="10.5" x2="7" y2="10.5"/>
+        <line x1="4" y1="5.5" x2="12" y2="5.5"/>
+        <line x1="4" y1="8" x2="10" y2="8"/>
+        <line x1="4" y1="10.5" x2="7" y2="10.5"/>
       </svg>
       <span>EPG</span>
     </button>
+    
     <button class="tb-btn" id="drmConfigBtn" title="DRM Settings">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <rect x="3" y="7" width="10" height="8" rx="1.5"/>
         <path d="M5 7V5a3 3 0 016 0v2"/>
         <circle cx="8" cy="11" r="1.2" fill="currentColor"/>
@@ -1627,30 +1637,38 @@ body::before{
       <span>DRM</span>
     </button>
   </div>
-</div>
+</header>
 
-<!-- BODY -->
-<div id="body">
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- MAIN BODY                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<main id="body">
 
-  <!-- PLAYER ZONE (always underneath) -->
-  <div id="playerZone">
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- PLAYER ZONE                                                    -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <section id="playerZone">
 
+    <!-- Single Player -->
     <div id="singlePlayer">
       <div data-shaka-player-container style="width:100%;height:100%">
-        <video autoplay playsinline data-shaka-player id="video"
-          poster="" style="width:100%;height:100%"></video>
+        <video autoplay playsinline data-shaka-player id="video" 
+               poster="" style="width:100%;height:100%"></video>
       </div>
     </div>
 
+    <!-- Multi Grid -->
     <div id="multiGrid"></div>
 
-    <div id="loadingOverlay" class="hidden">
-      <div class="ld-wrap"><div class="ld-ico">⚡</div></div>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden" aria-live="polite">
+      <div class="ld-wrap"><div class="ld-ico" aria-hidden="true">⚡</div></div>
       <div id="loadingText">Memuat</div>
     </div>
 
-    <div id="placeholder">
-      <div class="ph-hex">
+    <!-- Placeholder -->
+    <div id="placeholder" aria-label="Selamat Datang">
+      <div class="ph-hex" aria-hidden="true">
         <div class="ph-h"></div><div class="ph-h"></div>
         <div class="ph-h"></div><div class="ph-h"></div>
         <div class="ph-core">📺</div>
@@ -1663,137 +1681,129 @@ body::before{
       </div>
     </div>
 
-    <div id="epgPanel">
+    <!-- EPG Panel -->
+    <aside id="epgPanel" aria-label="Electronic Program Guide">
       <div id="epgHead">
         <div class="epg-hl">
           <span class="epg-badge">EPG</span>
           <span class="epg-ttl">GUIDE</span>
         </div>
-        <button id="epgClose">✕</button>
+        <button id="epgClose" aria-label="Tutup EPG">✕</button>
       </div>
       <div id="epgChName">—</div>
       <div id="epgContent">
         <div id="epgNoData">Pilih saluran untuk melihat panduan</div>
-        <div id="epgList"></div>
+        <div id="epgList" role="list"></div>
       </div>
-    </div>
+    </aside>
 
-    <!-- ── MODE 1: FLOATING DRAWER ── -->
-    <div id="sbEdge" class="sb-edge"></div>
-<div id="sbBackdrop" class="sb-backdrop" aria-hidden="true"></div>
+    <!-- MODE 1: Floating Drawer -->
+    <div id="sbEdge" class="sb-edge" aria-hidden="true"></div>
+    <div id="sbBackdrop" class="sb-backdrop" aria-hidden="true"></div>
 
-<aside id="drawer" class="drawer" aria-label="Daftar Saluran">
-  
-  <!-- Header / Search -->
-  <header class="dr-hd">
-    <div class="dr-search">
-      <span class="dr-si" aria-hidden="true">⌕</span>
-      <input 
-        id="searchInput" 
-        type="text" 
-        placeholder="Cari saluran..." 
-        aria-label="Cari saluran"
-        autocomplete="off"
-      >
-    </div>
-  </header>
+    <aside id="drawer" class="drawer" aria-label="Daftar Saluran">
+      <header class="dr-hd">
+        <div class="dr-search">
+          <span class="dr-si" aria-hidden="true">⌕</span>
+          <input id="searchInput" type="text" placeholder="Cari saluran..." 
+                 aria-label="Cari saluran" autocomplete="off">
+        </div>
+      </header>
 
-  <!-- Group Tabs -->
-  <nav id="groupTabs" class="group-tabs" aria-label="Daftar Grup"></nav>
+      <nav id="groupTabs" class="group-tabs" aria-label="Daftar Grup"></nav>
 
-  <!-- Channel List -->
-  <main id="channelList" class="channel-list" aria-live="polite">
-    <div class="ch-empty">
-      <span class="ch-empty-icon" aria-hidden="true">📡</span>
-      <p>Masukkan URL lalu klik <strong>LOAD</strong></p>
-    </div>
-  </main>
+      <main id="channelList" class="channel-list" aria-live="polite">
+        <div class="ch-empty">
+          <span class="ch-empty-icon" aria-hidden="true">📡</span>
+          <p>Masukkan URL lalu klik <strong>LOAD</strong></p>
+        </div>
+      </main>
 
-  <!-- Footer / Statistics -->
-  <footer class="dr-foot">
-    <div class="df-s">
-      <span class="df-dot" aria-hidden="true"></span>
-      <span class="df-label">
-        <b id="sfCount">0</b> saluran
-      </span>
-    </div>
-    <div class="df-s">
-      <span class="df-label">
-        <b id="sfGroups">0</b> grup
-      </span>
-    </div>
-  </footer>
+      <footer class="dr-foot">
+        <div class="df-s">
+          <span class="df-dot" aria-hidden="true"></span>
+          <span class="df-label"><b id="sfCount">0</b> saluran</span>
+        </div>
+        <div class="df-s">
+          <span class="df-label"><b id="sfGroups">0</b> grup</span>
+        </div>
+      </footer>
+    </aside>
 
-</aside>
+    <!-- MODE 3: Icon Bar -->
+    <nav id="iconBar" class="icon-bar" aria-label="Icon Saluran"></nav>
 
-    <!-- ── MODE 3: ICON BAR ── -->
-<ul id="iconBar" class="icon-bar"></ul>
+    <!-- MODE 4: Thumbnail Grid -->
+    <aside id="thumbGrid" aria-label="Grid Thumbnail">
+      <div class="tg-hd">
+        <div class="tg-search">
+          <span class="tg-si" aria-hidden="true">⌕</span>
+          <input id="searchInputTg" type="text" placeholder="Cari..." aria-label="Cari thumbnail">
+        </div>
+      </div>
+      <ul id="tgList" class="tg-list" role="list"></ul>
+    </aside>
 
-<!-- ── MODE 4: THUMB GRID ── -->
-<div id="thumbGrid">
-  <div class="tg-hd">
-    <div class="tg-search">
-      <span class="tg-si">⌕</span>
-      <input id="searchInputTg" type="text" placeholder="Cari...">
-    </div>
-  </div>
-  <ul id="tgList" class="tg-list"></ul>
-</div>
+  </section><!-- /playerZone -->
 
-</div><!-- /playerZone -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- MODE 2: Bottom Bar                                              -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <nav id="bottomBar" aria-label="Bottom Bar Saluran">
+    <ul class="bb-groups" id="bbGroups" role="tablist"></ul>
+    <ul class="bb-chList" id="bbList" role="list"></ul>
+  </nav>
 
-<!-- ── MODE 2: BOTTOM BAR ── -->
-<div id="bottomBar">
-  <ul class="bb-groups" id="bbGroups"></ul>
-  <ul class="bb-chList" id="bbList"></ul>
-</div>
-
-  <!-- NOW BAR -->
-  <div id="nowBar">
-    <div class="live-pill idle" id="livePill">
-      <div class="lp-dot"></div>
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- Now Bar (Info Saluran Aktif)                                   -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <footer id="nowBar">
+    <div class="live-pill idle" id="livePill" aria-label="Status Live">
+      <div class="lp-dot" aria-hidden="true"></div>
       <span class="lp-txt">LIVE</span>
     </div>
-    <img id="npLogo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+    <img id="npLogo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo Saluran">
     <div class="np-info">
       <div id="npName">Tidak ada saluran</div>
       <div id="npProg"></div>
     </div>
-    <div id="npClock">00:00:00</div>
-  </div>
+    <div id="npClock" aria-label="Jam">00:00:00</div>
+  </footer>
 
-  <!-- STATUS BAR -->
-  <div id="statusBar">
-    <div class="sb-s"><div class="sb-dot"></div>Saluran: <b id="sbCount">0</b></div>
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- Status Bar                                                      -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <footer id="statusBar" role="status">
+    <div class="sb-s"><span class="sb-dot" aria-hidden="true"></span>Saluran: <b id="sbCount">0</b></div>
     <div class="sb-s">Grup: <b id="sbGroups">0</b></div>
     <div class="sb-s">Mode: <b id="sbMode">Single</b></div>
     <div class="sb-s" id="sbDate"></div>
-  </div>
+  </footer>
 
-  <!-- DRM Active Badge -->
-  <div id="drmBadge" class="none" title="Klik untuk lihat DRM debug info">
-    <span class="drm-ico">🔒</span>
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- DRM Active Badge                                                -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <div id="drmBadge" class="none" title="Klik untuk lihat DRM debug info" role="button" tabindex="0">
+    <span class="drm-ico" aria-hidden="true">🔒</span>
     <span id="drmBadgeText">NO DRM</span>
   </div>
 
-</div><!-- /body -->
+</main><!-- /body -->
 
-<!-- SPLASH SCREEN -->
-<div id="splashScreen">
-  <!-- Animated scan line -->
-  <div class="splash-scan"></div>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SPLASH SCREEN                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="splashScreen" aria-label="Memuat VELOX">
+  <div class="splash-scan" aria-hidden="true"></div>
 
-  <!-- Corner brackets -->
-  <div class="splash-corner tl"></div>
-  <div class="splash-corner tr"></div>
-  <div class="splash-corner bl"></div>
-  <div class="splash-corner br"></div>
+  <div class="splash-corner tl" aria-hidden="true"></div>
+  <div class="splash-corner tr" aria-hidden="true"></div>
+  <div class="splash-corner bl" aria-hidden="true"></div>
+  <div class="splash-corner br" aria-hidden="true"></div>
 
-  <!-- Glow underneath -->
-  <div class="splash-glow"></div>
+  <div class="splash-glow" aria-hidden="true"></div>
 
-  <!-- Logo ring area -->
-  <div class="splash-logo-area">
+  <div class="splash-logo-area" aria-hidden="true">
     <div class="splash-ring"></div>
     <div class="splash-ring"></div>
     <div class="splash-ring"></div>
@@ -1801,14 +1811,12 @@ body::before{
     <div class="splash-core">📺</div>
   </div>
 
-  <!-- Brand name -->
   <div class="splash-brand">
     <div class="splash-name">VELOX</div>
     <div class="splash-sub">LIVE · STREAM · SYSTEM</div>
     <div class="splash-tagline" style="margin-top:6px">NEXT-GEN IPTV PLAYER</div>
   </div>
 
-  <!-- Progress -->
   <div class="splash-progress">
     <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
       <div class="splash-status" id="splashStatus">INISIALISASI...</div>
@@ -1817,48 +1825,48 @@ body::before{
     <div class="splash-bar-wrap"><div class="splash-bar" id="splashBar"></div></div>
   </div>
 
-  <!-- Version -->
   <div class="splash-ver">v4.0 · DRM READY</div>
 </div>
 
-<!-- DRM DEBUG PANEL -->
-<div id="drmDebugPanel">
-  <div class="drm-panel-head">
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- DRM DEBUG PANEL                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<aside id="drmDebugPanel" aria-label="DRM Debug Panel">
+  <header class="drm-panel-head">
     <span class="drm-panel-title">DRM Debug</span>
     <div style="display:flex;align-items:center;gap:6px">
       <span class="drm-type-badge none" id="drmPanelTypeBadge">NONE</span>
-      <button class="drm-panel-close" id="drmDebugClose">✕</button>
+      <button class="drm-panel-close" id="drmDebugClose" aria-label="Tutup">✕</button>
     </div>
-  </div>
+  </header>
   <div class="drm-panel-body" id="drmPanelBody">
     <div class="drm-no-info">Belum ada saluran yang diputar</div>
   </div>
-</div>
+</aside>
 
-<!-- DRM CONFIG MODAL -->
-<div id="drmModal">
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- DRM CONFIG MODAL                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="drmModal" role="dialog" aria-label="Konfigurasi DRM" aria-modal="true">
   <div class="drm-modal-box">
-    <div class="drm-modal-title">
-      🔒 DRM CONFIGURATION
-    </div>
+    <div class="drm-modal-title">🔒 DRM CONFIGURATION</div>
 
-    <!-- DRM Type tabs -->
-    <div class="drm-modal-tabs">
-      <div class="drm-tab active" data-drm="none">NO DRM</div>
-      <div class="drm-tab" data-drm="clearkey">CLEARKEY</div>
-      <div class="drm-tab wv" data-drm="widevine">WIDEVINE L3</div>
+    <div class="drm-modal-tabs" role="tablist">
+      <div class="drm-tab active" data-drm="none" role="tab" aria-selected="true">NO DRM</div>
+      <div class="drm-tab" data-drm="clearkey" role="tab">CLEARKEY</div>
+      <div class="drm-tab wv" data-drm="widevine" role="tab">WIDEVINE L3</div>
     </div>
 
     <!-- NO DRM -->
-    <div class="drm-tab-content active" id="drmTabNone">
+    <div class="drm-tab-content active" id="drmTabNone" role="tabpanel">
       <div class="drm-detect-row">
-        <span class="drm-detect-ico">📡</span>
+        <span class="drm-detect-ico" aria-hidden="true">📡</span>
         <span class="drm-detect-txt">Tidak ada enkripsi DRM. Stream diputar langsung.</span>
       </div>
     </div>
 
     <!-- CLEARKEY -->
-    <div class="drm-tab-content" id="drmTabClearkey">
+    <div class="drm-tab-content" id="drmTabClearkey" role="tabpanel">
       <div class="drm-modal-section">
         <label class="drm-modal-lbl">KEY ID (KID) — hex</label>
         <input class="drm-modal-inp" id="drmCkKid" placeholder="d4b636034b944d7c987871a3fdd25de4" maxlength="64">
@@ -1868,13 +1876,13 @@ body::before{
         <input class="drm-modal-inp" id="drmCkKey" placeholder="a8294f4899a34cdb9429c49bc531d7d8" maxlength="64">
       </div>
       <div class="drm-detect-row">
-        <span class="drm-detect-ico">ℹ️</span>
+        <span class="drm-detect-ico" aria-hidden="true">ℹ️</span>
         <span class="drm-detect-txt">ClearKey akan diterapkan ke saluran yang sedang aktif dan disimpan untuk diputar ulang.</span>
       </div>
     </div>
 
     <!-- WIDEVINE -->
-    <div class="drm-tab-content" id="drmTabWidevine">
+    <div class="drm-tab-content" id="drmTabWidevine" role="tabpanel">
       <div class="drm-modal-section">
         <label class="drm-modal-lbl">LICENSE SERVER URL</label>
         <input class="drm-modal-inp" id="drmWvLicenseUrl" placeholder="https://license.example.com/widevine">
@@ -1888,7 +1896,7 @@ body::before{
         <input class="drm-modal-inp" id="drmWvHdrVal" placeholder="Bearer token...">
       </div>
       <div class="drm-detect-row">
-        <span class="drm-detect-ico">🛡️</span>
+        <span class="drm-detect-ico" aria-hidden="true">🛡️</span>
         <span class="drm-detect-txt">Widevine L3 membutuhkan browser dengan EME support (Chrome/Edge). Safari gunakan FairPlay.</span>
       </div>
     </div>
@@ -1918,12 +1926,15 @@ body::before{
 
     <div class="drm-modal-footer">
       <button class="drm-modal-btn cancel" id="drmModalCancel">BATAL</button>
-      <button class="drm-modal-btn apply" id="drmModalApply">TERAPKAN & PUTAR ULANG</button>
+      <button class="drm-modal-btn apply" id="drmModalApply">TERAPKAN &amp; PUTAR ULANG</button>
     </div>
   </div>
 </div>
 
-<div id="toast"></div>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TOAST NOTIFICATION                                               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mux.js/6.3.0/mux.min.js" crossorigin="anonymous"></script>
