@@ -8,34 +8,46 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:    #080202; /* Pitch Black */
-  --s1:    #140505;
-  --s2:    #1f0a0a;
-  --s3:    #2b0f0f;
-  --s4:    #3d1414;
-  --s5:    #4f1a1a;
+  /* Background & Surfaces */
+  --bg:    #F6F6F6;   /* Light neutral background */
+  --s1:    #FFFFFF;
+  --s2:    #FFF4CC;   /* Soft yellow */
+  --s3:    #D7F8E3;   /* Soft green */
+  --s4:    #E5E7FF;   /* Soft blue */
+  --s5:    #FFD6D6;   /* Soft red */
 
-  --g:     #ff3333;   /* Pure Red main */
-  --g2:    #cc0000;
-  --g3:    #ff5555;
-  --gdim:  rgba(255,51,51,0.10);
-  --gglow: rgba(255,51,51,0.22);
-  --gsoft: rgba(255,51,51,0.05);
-  --gline: rgba(255,51,51,0.18);
+  /* Primary Accent Colors (Bold & Solid) */
+  --g:     #00AEEF;   /* Bright blue */
+  --g2:    #0077B6;   /* Darker blue for hover */
+  --g3:    #33C3FF;   /* Lighter blue highlight */
+  --gdim:  rgba(0, 174, 239, 0.10);
+  --gglow: rgba(0, 0, 0, 0.0);   /* No glow in Neubrutalism */
+  --gsoft: rgba(0, 174, 239, 0.05);
+  --gline: #000000;   /* Borders use solid black */
 
-  --r:     #ffffff;   /* Accent White */
-  --rdim:  rgba(255,255,255,0.18);
+  /* Accent & Borders */
+  --r:     #000000;   /* Strong black for borders and text */
+  --rdim:  rgba(0, 0, 0, 0.4);
 
-  --b1:    rgba(255,51,51,0.06);
-  --b2:    rgba(255,51,51,0.12);
-  --b3:    rgba(255,51,51,0.20);
+  /* Shadow Colors (Hard Shadows) */
+  --b1:    rgba(0, 0, 0, 0.10);
+  --b2:    rgba(0, 0, 0, 0.20);
+  --b3:    rgba(0, 0, 0, 0.30);
 
-  --t0:    #ffebeb;   /* Teks kemerahan tipis */
-  --t1:    #d6a3a3;
-  --t2:    #966666;
-  --t3:    #5c3333;
-  --t4:    #331a1a;
+  /* Text Colors */
+  --t0:    #000000;   /* Primary text */
+  --t1:    #333333;   /* Secondary text */
+  --t2:    #666666;
+  --t3:    #999999;
+  --t4:    #CCCCCC;
 
+  /* Additional Bold Colors for Flexibility */
+  --accent-yellow: #FFD600;
+  --accent-green:  #00C853;
+  --accent-red:    #FF3B30;
+  --accent-purple: #7B61FF;
+
+  /* Typography */
   --fm: 'Share Tech Mono', monospace;
   --fd: 'Orbitron', sans-serif;
   --fb: 'Exo 2', sans-serif;
